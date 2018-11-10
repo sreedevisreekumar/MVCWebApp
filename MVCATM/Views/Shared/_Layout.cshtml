@@ -33,7 +33,9 @@
                 <h1 class="modal-header" style="color:darkblue"> MVC BANK WEB BASED ATM</h1>
             </div>
         </div>
-        @RenderBody()
+        <div class="margin-top-20">
+            @RenderBody()
+        </div>
         <hr />
         <footer>
             <p>&copy; @DateTime.Now.Year - MVC BANK ATM Application- @Html.Action("Serial","Home",new { letterCase="upper"})</p>

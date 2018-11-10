@@ -156,13 +156,11 @@ namespace MVCATM.Controllers
                 if (result.Succeeded)
                 {
                     await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
-                    ApplicationDbContext applicationDbContext = new ApplicationDbContext();
-                    Repository repository = new Repository();
-                    var accountNumber = (123456 + repository.GetCountCheckingAccounts()).ToString().PadLeft(10, '0');
-
-                    var checkingAccount = new CheckingAccount { FirstName = model.FirstName, LastName = model.LastName, AccountNumber = accountNumber, Balance = 0, ApplicationUserId = user.Id };
-                    applicationDbContext.CheckingAccounts.Add(checkingAccount);
-                    applicationDbContext.SaveChanges();
+                
+                    Repository repository = new Repository();                  
+                   CheckingAccount checkingAccount = new CheckingAccount { FirstName = model.FirstName, LastName = model.LastName, AccountNumber = "", Balance = 0, ApplicationUserId = user.Id };
+                   checkingAccount = repository.CreateCheckingAccount(checkingAccount);
+                   
 
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
