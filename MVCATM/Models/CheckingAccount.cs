@@ -38,6 +38,6 @@ namespace MVCATM.Models
         [Required]
         public string ApplicationUserId { get; set; }
 
-        public virtual List<Transaction> Transactions { get; set; }
+        public virtual ICollection<Transaction> Transactions { get; set; }
     }
 }

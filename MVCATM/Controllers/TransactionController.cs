@@ -61,22 +61,15 @@ namespace MVCATM.Controllers
 
         // POST: Transaction/Deposit
         [HttpPost]
-        public ActionResult Deposit(FormCollection collection)
+        public ActionResult Deposit(Transaction transaction)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                // TODO: Add insert logic here
-                Decimal amount = Convert.ToDecimal(collection["Amount"]);
-                string applicationUserId = User.Identity.GetUserId();
-                CheckingAccount checkingAccount = repository.GetAccountByUserId(applicationUserId);
-                var accountId = checkingAccount.Id;
-                Transaction transaction = new Transaction
-                {
-                    Amount = amount,
-                    checkingAccount = checkingAccount,
-                    CheckingAccountId = accountId                   
-                };
-              TransactionStatus transactionStatus=repository.MakeDeposit(transaction);
+                return View(transaction);
+            }
+            try
+            {                
+                TransactionStatus transactionStatus=repository.MakeDeposit(transaction);
 
                 return RedirectToAction("Details","TransactionStatus",routeValues:new { Id=transactionStatus.ID});
             }
@@ -103,22 +96,21 @@ namespace MVCATM.Controllers
 
         // POST: Transaction/Create
         [HttpPost]
-        public ActionResult Withdraw(FormCollection collection)
+        public ActionResult Withdraw(Transaction transaction)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(transaction);
+            }
             try
             {
                 // TODO: Add insert logic here
-                Decimal amount = Convert.ToDecimal(collection["Amount"]);
-                string applicationUserId = User.Identity.GetUserId();
-                CheckingAccount checkingAccount = repository.GetAccountByUserId(applicationUserId);
+                Decimal amount = transaction.Amount;
+                
+                CheckingAccount checkingAccount = repository.GetCheckingAccountById(transaction.CheckingAccountId);
                 Decimal balance = checkingAccount.Balance;
                 var accountId = checkingAccount.Id;
-                Transaction transaction = new Transaction
-                {
-                    Amount = amount,
-                    checkingAccount = checkingAccount,
-                    CheckingAccountId = accountId
-                };
+                
                 if (balance > amount)
                 {
                    

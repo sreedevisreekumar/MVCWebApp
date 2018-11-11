@@ -16,6 +16,11 @@ namespace MVCATM.Models
             int count = this.applicationDbContext.CheckingAccounts.Count();
             return count;
         }
+        public CheckingAccount GetCheckingAccountById(int id)
+        {
+            CheckingAccount checkingAccount = this.applicationDbContext.CheckingAccounts.Where(c => c.Id == id).FirstOrDefault<CheckingAccount>();
+            return checkingAccount;
+        }
         public CheckingAccount GetAccountByUserId(string userId)
         {
             
@@ -37,15 +42,15 @@ namespace MVCATM.Models
             Decimal amount = transaction.Amount;
             var date = DateTime.Now;
             TransactionStatus transactionStatus = new TransactionStatus{TransactionTime=DateTime.Now};
-            CheckingAccount checkingAccount = transaction.checkingAccount;
-            transaction.CheckingAccountId = checkingAccount.Id;
-                       
+            CheckingAccount checkingAccount = GetCheckingAccountById(transaction.CheckingAccountId);
+
             try
             {
             
                 this.applicationDbContext.Transactions.Add(transaction);
                 this.applicationDbContext.SaveChanges();
 
+               
                 checkingAccount.Balance = checkingAccount.Balance + amount;
                 this.applicationDbContext.Entry(checkingAccount).State = EntityState.Modified;
                 this.applicationDbContext.SaveChanges();
@@ -97,7 +102,7 @@ namespace MVCATM.Models
             Decimal amount = transaction.Amount;
             var date = DateTime.Now;
             TransactionStatus transactionStatus = new TransactionStatus();
-            CheckingAccount checkingAccount = transaction.checkingAccount;
+            CheckingAccount checkingAccount = GetCheckingAccountById(transaction.CheckingAccountId); 
             try
             {
                
