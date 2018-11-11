@@ -12,6 +12,7 @@ namespace MVCATM.Models
 
         [Range(1.0, Double.MaxValue)]
         [DataType(DataType.Currency)]
+        [DisplayFormat(ApplyFormatInEditMode = false, DataFormatString = "{0:c}")]
         public decimal Amount { get; set; }
 
         public virtual CheckingAccount checkingAccount { get; set; }

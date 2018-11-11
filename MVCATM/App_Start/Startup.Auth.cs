@@ -54,9 +54,9 @@ namespace MVCATM
             //   consumerKey: "",
             //   consumerSecret: "");
 
-            //app.UseFacebookAuthentication(
-            //   appId: "",
-            //   appSecret: "");
+            app.UseFacebookAuthentication(
+               appId: "1792420417550082",
+               appSecret: "2a20e3103b390cecf95bf0fdc1a38169");
 
             //app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
             //{

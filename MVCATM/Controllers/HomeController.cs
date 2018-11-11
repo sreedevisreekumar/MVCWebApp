@@ -3,13 +3,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
+using MVCATM.Models;
 
 namespace MVCATM.Controllers
 {
     public class HomeController : Controller
     {
+        private Repository repository = new Repository();
+        [Authorize]
         public ActionResult Index()
         {
+            string applicationUserId = User.Identity.GetUserId();
+            CheckingAccount checkingAccount = repository.GetAccountByUserId(applicationUserId);
+            var checkingAccountId = checkingAccount.Id;
+            ViewBag.CheckingAccountId = checkingAccountId;
+            var manager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+            var user = manager.FindById(applicationUserId);
+            ViewBag.Pin = user.Pin;
             return View();
         }
 

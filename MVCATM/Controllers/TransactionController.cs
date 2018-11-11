@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using Microsoft.AspNet.Identity;
 using MVCATM.Models;
 
 namespace MVCATM.Controllers
@@ -19,7 +18,7 @@ namespace MVCATM.Controllers
         }
 
         // GET: Transaction/Details/5
-        public ActionResult Details(int id)
+        public ActionResult Details()
         {
             return View();
         }
@@ -46,15 +45,14 @@ namespace MVCATM.Controllers
             }
         }
         // GET: Transaction/Deposit
-        public ActionResult Deposit()
+        public ActionResult Deposit(int checkingAccountId)
         {
-            string applicationUserId = User.Identity.GetUserId();
-            CheckingAccount checkingAccount = repository.GetAccountByUserId(applicationUserId);
-            var accountId = checkingAccount.Id;
+            CheckingAccount checkingAccount = repository.GetCheckingAccountById(checkingAccountId);      
+
             Transaction transaction = new Transaction {
                                                         Amount = 0,
                                                         checkingAccount = checkingAccount,
-                                                        CheckingAccountId = accountId,
+                                                        CheckingAccountId = checkingAccountId,
                                                         };
             return View(transaction);
         }
@@ -80,17 +78,15 @@ namespace MVCATM.Controllers
         }
 
         // GET: Transaction/Withdraw
-        public ActionResult Withdraw()
+        public ActionResult Withdraw(int checkingAccountId)
         {
-            string applicationUserId = User.Identity.GetUserId();
-            CheckingAccount checkingAccount = repository.GetAccountByUserId(applicationUserId);
-            var accountId = checkingAccount.Id;
+            CheckingAccount checkingAccount = repository.GetCheckingAccountById(checkingAccountId);
             Transaction transaction = new Transaction
             {
                 Amount = 0,
                 checkingAccount = checkingAccount,
-                CheckingAccountId = accountId
-                          };
+                CheckingAccountId = checkingAccountId
+            };
             return View(transaction);
         }
 

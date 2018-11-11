@@ -9,6 +9,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using MVCATM.Models;
+using MVCATM.Services;
 
 namespace MVCATM.Controllers
 {
@@ -151,15 +152,19 @@ namespace MVCATM.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                CheckingAccountService checkingAccountService = new CheckingAccountService(HttpContext.GetOwinContext().Get<ApplicationDbContext>());
+                string randomPin = checkingAccountService.GenerateRandomNo().ToString();
+                var user = new ApplicationUser { UserName = model.Email, Email = model.Email,Pin=randomPin };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
+                    UserManager.AddClaim(user.Id, new Claim(ClaimTypes.GivenName, model.FirstName));
                     await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
-                
-                    Repository repository = new Repository();                  
-                   CheckingAccount checkingAccount = new CheckingAccount { FirstName = model.FirstName, LastName = model.LastName, AccountNumber = "", Balance = 0, ApplicationUserId = user.Id };
-                   checkingAccount = repository.CreateCheckingAccount(checkingAccount);
+
+     
+                    checkingAccountService.CreateCheckingAccount(model.FirstName, model.LastName, user.Id, 0);
+                   
+                   
                    
 
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
@@ -379,6 +384,8 @@ namespace MVCATM.Controllers
                     result = await UserManager.AddLoginAsync(user.Id, info.Login);
                     if (result.Succeeded)
                     {
+                        CheckingAccountService checkingAccountService = new CheckingAccountService(HttpContext.GetOwinContext().Get<ApplicationDbContext>());
+                        checkingAccountService.CreateCheckingAccount("Facebook", "User", user.Id, 500);
                         await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
                         return RedirectToLocal(returnUrl);
                     }

@@ -5,25 +5,39 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
+using System.Web.Security;
 
 namespace MVCATM.Controllers
 {
     [Authorize]
     public class CheckingAccountController : Controller
     {
+        private Repository repository = new Repository();
         // GET: CheckingAccount
         public ActionResult Index()
         {
             return View();
         }
-
+        [Authorize(Roles ="Admin")]
+        public ActionResult List()
+        {
+            List<CheckingAccount> checkingAccounts = repository.GetCheckingAccounts();
+            return View(checkingAccounts);
+        }
         // GET: CheckingAccount/Details
         public ActionResult Details()
         {
-            Repository repository = new Repository();
             string applicationUserId = User.Identity.GetUserId();
-            CheckingAccount checkingAccount = repository.GetAccountByUserId(applicationUserId);
+            CheckingAccount checkingAccount = this.repository.GetAccountByUserId(applicationUserId);
             return View(checkingAccount);
+        }
+        [Authorize(Roles = "Admin")]
+        // GET: CheckingAccount/Details
+        public ActionResult DetailsForAdmin(int checkingAccountId)
+        {
+         
+            CheckingAccount checkingAccount = repository.GetCheckingAccountById(checkingAccountId);
+            return View("Details",checkingAccount);
         }
 
         // GET: CheckingAccount/Create

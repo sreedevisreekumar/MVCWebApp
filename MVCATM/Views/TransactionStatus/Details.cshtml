@@ -7,11 +7,11 @@
 
 <div class="row">
     <div class="col-md-10 col-md-offset-2">
-        <h4>TransactionStatus</h4>
+        <h4>Transaction Status</h4>
         <hr />
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">Transaction Status</h5>
+                <h5 class="card-title">@Model.processStatus</h5>
                 <p class="card-text">
                     @Model.StatusMessage
                 </p>
@@ -19,11 +19,11 @@
                 <div class="row">
                     <div class="col-md-6 col-md-offset-3">
                         Account Number:@Model.transaction.checkingAccount.AccountNumber
-                        <br/>
-                        Current Balance:@Model.transaction.checkingAccount.Balance
                         <br />
-                       Transaction Time:@Model.TransactionTime
-                        <br/>
+                        Current Balance:@Html.DisplayFor(model => model.transaction.checkingAccount.Balance, new { htmlAttributes = new { @class = "form-control" } })
+                        <br />
+                        Transaction Time:@Model.TransactionTime
+                        <br />
                         Initiated By:@Model.transaction.checkingAccount.Name
                     </div>
                 </div>

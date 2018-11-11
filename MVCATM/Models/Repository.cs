@@ -11,10 +11,23 @@ namespace MVCATM.Models
     {
        private ApplicationDbContext applicationDbContext = new ApplicationDbContext();
 
+        public Repository()
+        {
+
+        }
+
+        public Repository(ApplicationDbContext applicationDbContext)
+        {
+            this.applicationDbContext = applicationDbContext;
+        }
         public int GetCountCheckingAccounts()
         {
             int count = this.applicationDbContext.CheckingAccounts.Count();
             return count;
+        }
+        public List<CheckingAccount>GetCheckingAccounts()
+        {
+            return this.applicationDbContext.CheckingAccounts.ToList();
         }
         public CheckingAccount GetCheckingAccountById(int id)
         {
