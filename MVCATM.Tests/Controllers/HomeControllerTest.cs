@@ -22,7 +22,7 @@ namespace MVCATM.Tests.Controllers
             ViewResult result = controller.Index() as ViewResult;
 
             // Assert
-            Assert.IsNotNull(result);
+            Assert.AreEqual("Index", result.ViewName);
         }
 
         [TestMethod]
@@ -45,10 +45,10 @@ namespace MVCATM.Tests.Controllers
             HomeController controller = new HomeController();
 
             // Act
-            ViewResult result = controller.Contact() as ViewResult;
+            ViewResult result = controller.Contact("I like the online banking.") as ViewResult;
 
             // Assert
-            Assert.IsNotNull(result);
+            Assert.AreEqual("Thanks!We got your message", result.ViewBag.Message);
         }
     }
 }
