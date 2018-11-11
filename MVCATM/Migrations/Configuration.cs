@@ -27,7 +27,7 @@ namespace MVCATM.Migrations
             var userManager = new UserManager<ApplicationUser>(userStore);
             if(!context.Users.Any(t=>t.UserName =="admin@mvcatm.com"))
             {
-                var user = new ApplicationUser { UserName = "admin@mvcatm.com", Email = "admin@mvcatm.com" };
+                var user = new ApplicationUser { UserName = "admin@mvcatm.com", Email = "admin@mvcatm.com",Pin ="8975" };
                 userManager.Create(user, "passW0rd!");
 
                 var service = new CheckingAccountService(context);

@@ -207,6 +207,10 @@
     <Compile Include="Migrations\201811110825461_pin.Designer.cs">
       <DependentUpon>201811110825461_pin.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201811111013218_admin.cs" />
+    <Compile Include="Migrations\201811111013218_admin.Designer.cs">
+      <DependentUpon>201811111013218_admin.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
@@ -344,6 +348,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201811110825461_pin.resx">
       <DependentUpon>201811110825461_pin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201811111013218_admin.resx">
+      <DependentUpon>201811111013218_admin.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
