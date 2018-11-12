@@ -30,7 +30,7 @@ namespace MVCATM.Migrations
                 var user = new ApplicationUser { UserName = "admin@mvcatm.com", Email = "admin@mvcatm.com",Pin ="8975" };
                 userManager.Create(user, "passW0rd!");
 
-                var service = new CheckingAccountService(context);
+                var service = new CheckingAccountService(new Repository(context));
                 service.CreateCheckingAccount("admin", "user", user.Id, 1000);
 
                 context.Roles.AddOrUpdate(r => r.Name, new IdentityRole { Name = "Admin" });

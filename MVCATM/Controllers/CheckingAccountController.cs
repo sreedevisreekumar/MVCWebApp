@@ -12,7 +12,16 @@ namespace MVCATM.Controllers
     [Authorize]
     public class CheckingAccountController : Controller
     {
-        private Repository repository = new Repository();
+        private IRepository repository;
+        public CheckingAccountController()
+        {
+            this.repository = new Repository();
+        }
+        public CheckingAccountController(IRepository repository)
+        {
+            this.repository = repository;
+        }
+
         // GET: CheckingAccount
         public ActionResult Index()
         {

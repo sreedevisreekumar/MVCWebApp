@@ -152,7 +152,7 @@ namespace MVCATM.Controllers
         {
             if (ModelState.IsValid)
             {
-                CheckingAccountService checkingAccountService = new CheckingAccountService(HttpContext.GetOwinContext().Get<ApplicationDbContext>());
+                CheckingAccountService checkingAccountService = new CheckingAccountService(new Repository(HttpContext.GetOwinContext().Get<ApplicationDbContext>()));
                 string randomPin = checkingAccountService.GenerateRandomNo().ToString();
                 var user = new ApplicationUser { UserName = model.Email, Email = model.Email,Pin=randomPin };
                 var result = await UserManager.CreateAsync(user, model.Password);
@@ -384,7 +384,7 @@ namespace MVCATM.Controllers
                     result = await UserManager.AddLoginAsync(user.Id, info.Login);
                     if (result.Succeeded)
                     {
-                        CheckingAccountService checkingAccountService = new CheckingAccountService(HttpContext.GetOwinContext().Get<ApplicationDbContext>());
+                        CheckingAccountService checkingAccountService = new CheckingAccountService(new Repository(HttpContext.GetOwinContext().Get<ApplicationDbContext>()));
                         checkingAccountService.CreateCheckingAccount("Facebook", "User", user.Id, 500);
                         await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
                         return RedirectToLocal(returnUrl);

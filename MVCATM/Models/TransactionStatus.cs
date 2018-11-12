@@ -6,7 +6,7 @@ using System.Web;
 
 namespace MVCATM.Models
 {
-    public enum ProcessStatus
+    public enum TransactionProcessStatus
     {
         Success,
         Error
@@ -14,7 +14,7 @@ namespace MVCATM.Models
     public class TransactionStatus
     {
         public int ID { get; set; }
-        public ProcessStatus processStatus { get; set; } 
+        public TransactionProcessStatus processStatus { get; set; } 
         public String StatusMessage{ get; set; }
         [Required]
         public DateTime TransactionTime { get; set; }

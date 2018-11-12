@@ -216,6 +216,7 @@
     <Compile Include="Models\ApplicationDbContext.cs" />
     <Compile Include="Models\CheckingAccount.cs" />
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\IRepository.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\Repository.cs" />
     <Compile Include="Models\Transaction.cs" />

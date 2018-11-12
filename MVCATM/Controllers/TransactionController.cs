@@ -4,13 +4,26 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using MVCATM.Models;
+using MVCATM.Services;
 
 namespace MVCATM.Controllers
 {
     [Authorize]
     public class TransactionController : Controller
     {
-        private Repository repository = new Repository();
+        private IRepository repository;
+        private CheckingAccountService checkingAccountService;
+
+       public TransactionController()
+        {
+            this.repository = new Repository();
+           this.checkingAccountService = new CheckingAccountService(this.repository);
+        }
+        public TransactionController(IRepository iRepository)
+        {
+            this.repository = iRepository;
+            this.checkingAccountService = new CheckingAccountService(this.repository);
+        }
         // GET: Transaction
         public ActionResult Index()
         {
@@ -67,7 +80,7 @@ namespace MVCATM.Controllers
             }
             try
             {                
-                TransactionStatus transactionStatus=repository.MakeDeposit(transaction);
+                TransactionStatus transactionStatus=checkingAccountService.MakeDeposit(transaction);
 
                 return RedirectToAction("Details","TransactionStatus",routeValues:new { Id=transactionStatus.ID});
             }
@@ -94,38 +107,41 @@ namespace MVCATM.Controllers
         [HttpPost]
         public ActionResult Withdraw(Transaction transaction)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(transaction);
-            }
+            
             try
             {
-                // TODO: Add insert logic here
-                Decimal amount = transaction.Amount;
-                
-                CheckingAccount checkingAccount = repository.GetCheckingAccountById(transaction.CheckingAccountId);
-                Decimal balance = checkingAccount.Balance;
-                var accountId = checkingAccount.Id;
-                
-                if (balance > amount)
+                if (ModelState.IsValid)
                 {
-                   
-                   TransactionStatus transactionStatus = repository.MakeWithDrawal(transaction);
-                    return RedirectToAction("Details", "TransactionStatus", routeValues: new { Id = transactionStatus.ID });
+                    // TODO: Add insert logic here
+                    Decimal amount = transaction.Amount;
+
+                    CheckingAccount checkingAccount = repository.GetCheckingAccountById(transaction.CheckingAccountId);
+                    Decimal balance = checkingAccount.Balance;
+                    var accountId = checkingAccount.Id;
+                    transaction.checkingAccount = checkingAccount;
+                    if (balance > amount)
+                    {
+
+                        TransactionStatus transactionStatus = this.checkingAccountService.MakeWithDrawal(transaction);
+                        return RedirectToAction("Details", "TransactionStatus", routeValues: new { Id = transactionStatus.ID });
+                    }
+                    else
+                    {
+                        String message = "Insufficient balance.Cannot proceed withdrawal";
+                         ModelState.AddModelError("Amount", "Insufficient balance.Cannot proceed withdrawal");
+                        return View(transaction);
+                    }
                 }
-                else
+               else
                 {
-                    String message = "Insufficient balance.Cannot proceed withdrawal";
-                    ModelState.AddModelError("",message);
                     return View(transaction);
                 }
-
-                
             }
             catch
             {
-                return View();
+                return View(transaction);
             }
+
         }
 
         // GET: Transaction/Edit/5
