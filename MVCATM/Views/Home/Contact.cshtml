@@ -15,17 +15,47 @@
     <strong>Support:</strong>   <a href="mailto:Support@example.com">Support@example.com</a><br />
     <strong>Marketing:</strong> <a href="mailto:Marketing@example.com">Marketing@example.com</a>
 </address>
-@using (Html.BeginForm())
-{
-    @Html.AntiForgeryToken()
+@*<div id="formSection">
+    @using (Ajax.BeginForm(new AjaxOptions { HttpMethod = "post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "formSection" }))
+    {
+        @Html.AntiForgeryToken()
 
-    <div class="form-horizontal">
-        <h4>@ViewBag.Message</h4>
-        <div class="form-group">
-            <div class="col-md-10">
-                <textarea name="message"></textarea>
-                <input type="submit" value="send" />
+        <div class="form-horizontal">
+          
+            <div class="form-group">
+                <div class="col-md-10">
+                    <textarea name="message"></textarea>
+                    <input type="submit" value="send" />
+                </div>
             </div>
         </div>
-    </div>
-}
+    }
+</div>
+@section scripts{
+
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+}*@
+<div id="formSection" class="form-group">
+    <h3 class="col-form-label-lg">@ViewBag.Message</h3>
+    <img src="~/Content/Images/loading.gif" id="progress" style="display:none;height:60px;width:60px" />
+    <form method="post" id="contactForm">
+        <textarea name="message" id="message" class="form-control-lg" rows="5"></textarea>
+        <br/>
+        <input type="submit" value="send" class="btn btn-primary" />
+    </form>
+
+</div>
+@section scripts{
+    <script>
+        $('#contactForm').submit(function () {
+            $('#progress').show();
+            $.post('', { message: $('message').val() })
+                .done(function (response){
+                    setTimeout(
+                        function () { $("#formSection").html(response); },
+                        2000);
+                });
+            return false;
+          });
+    </script>
+    }

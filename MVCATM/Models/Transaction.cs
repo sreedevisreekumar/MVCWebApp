@@ -10,7 +10,6 @@ namespace MVCATM.Models
     {
         public int Id { get; set; }
 
-        [Range(1.0,100000)]
         [DataType(DataType.Currency)]
         [DisplayFormat(ApplyFormatInEditMode = false, DataFormatString = "{0:c}")]
         public decimal Amount { get; set; }

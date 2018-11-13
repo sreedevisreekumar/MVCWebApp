@@ -42,8 +42,8 @@ namespace MVCATM.Controllers
         public ActionResult Contact(string message)
         {
             ViewBag.Message = "Thanks!We got your message";
+            return PartialView("_ContactThanks");
 
-            return View();
         }
 
         public ActionResult Serial(string letterCase)

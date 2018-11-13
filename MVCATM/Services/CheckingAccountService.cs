@@ -34,7 +34,7 @@ namespace MVCATM.Services
             checkingAccount.Balance = repository.GetTransactions().Where(t => t.CheckingAccountId == checkingAccount.Id).Sum(c => c.Amount);
             repository.SaveCheckingAccount(checkingAccount);
         }
-        public TransactionStatus MakeDeposit(Transaction transaction)
+        public TransactionStatus MakeTransaction(Transaction transaction)
         {
             Decimal amount = transaction.Amount;
             var date = DateTime.Now;
@@ -47,9 +47,9 @@ namespace MVCATM.Services
 
                 transaction = repository.AddTransaction(transaction);
                 UpdateBalance(checkingAccount);
-              
-                transactionStatus.StatusMessage = $"Deposited {amount} to {checkingAccount.AccountNumber} on {date:HH:mm} by {checkingAccount.Name}";
+
                 transactionStatus.processStatus = TransactionProcessStatus.Success;
+                transactionStatus.StatusMessage = $"Transaction of {amount} to {checkingAccount.AccountNumber} on {date:HH:mm} by {checkingAccount.Name} was { transactionStatus.processStatus }";
                 transactionStatus.transaction = transaction;
                 transactionStatus.TransactionId = transaction.Id;
                 transactionStatus.TransactionTime = DateTime.Now;
@@ -59,8 +59,8 @@ namespace MVCATM.Services
             }
             catch (DbUpdateException ex)
             {
-                transactionStatus.StatusMessage = $"Exception {ex.Message} on {checkingAccount.AccountNumber} deposit on {date:HH:mm} by {checkingAccount.Name} ";
                 transactionStatus.processStatus = TransactionProcessStatus.Error;
+                transactionStatus.StatusMessage = $"Exception {ex.Message} during transaction of {amount} on {checkingAccount.AccountNumber} on {date:HH:mm} by {checkingAccount.Name} ";
                 transactionStatus.transaction = transaction;
                 transactionStatus.TransactionId = transaction.Id;
                 transactionStatus.TransactionTime = DateTime.Now;
@@ -70,8 +70,9 @@ namespace MVCATM.Services
             catch (Exception ex)
             {
 
-                transactionStatus.StatusMessage = $"Failed to deposit  {amount} to {checkingAccount.AccountNumber} on {date:HH:mm} by {checkingAccount.Name} ";
+                
                 transactionStatus.processStatus = TransactionProcessStatus.Error;
+                transactionStatus.StatusMessage = $"Transaction of {amount} to {checkingAccount.AccountNumber} on {date:HH:mm} by {checkingAccount.Name} was { transactionStatus.processStatus }";
                 transactionStatus.transaction = transaction;
                 transactionStatus.TransactionId = transaction.Id;
                 transactionStatus.TransactionTime = DateTime.Now;
@@ -85,7 +86,7 @@ namespace MVCATM.Services
         public TransactionStatus MakeWithDrawal(Transaction transaction)
         {
             transaction.Amount = -transaction.Amount;
-           TransactionStatus transactionStatus = MakeDeposit(transaction);
+           TransactionStatus transactionStatus = MakeTransaction(transaction);
             return transactionStatus;
         }
     }

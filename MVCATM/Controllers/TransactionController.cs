@@ -80,7 +80,7 @@ namespace MVCATM.Controllers
             }
             try
             {                
-                TransactionStatus transactionStatus=checkingAccountService.MakeDeposit(transaction);
+                TransactionStatus transactionStatus=checkingAccountService.MakeTransaction(transaction);
 
                 return RedirectToAction("Details","TransactionStatus",routeValues:new { Id=transactionStatus.ID});
             }
