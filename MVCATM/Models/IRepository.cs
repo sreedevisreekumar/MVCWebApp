@@ -21,5 +21,6 @@ namespace MVCATM.Models
         CheckingAccount SaveCheckingAccount(CheckingAccount checkingAccount);
         TransactionStatus AddTransactionStatus(TransactionStatus transactionStatus);
        TransactionStatus SaveTransactionStatus(TransactionStatus transactionStatus);
+        List<Transaction> GetTransactionsByCheckingAccount(int checkingAccountId);
     }
 }

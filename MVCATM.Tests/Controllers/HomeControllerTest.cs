@@ -34,7 +34,7 @@ namespace MVCATM.Tests.Controllers
             HomeController controller = new HomeController();
 
             // Act
-            ViewResult result = controller.Contact("I like the online banking.") as ViewResult;
+            PartialViewResult result = controller.Contact("I like the online banking.") as PartialViewResult;
 
             // Assert
             Assert.AreEqual("Thanks!We got your message", result.ViewBag.Message);

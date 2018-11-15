@@ -18,8 +18,10 @@ namespace MVCATM.Models
         [Required]
         public int CheckingAccountId { get; set; }
 
-        
+        public virtual TransactionStatus TransactionStatus{get;set;}
+  
+        public int TransactionStatusId { get; set; }
 
-     
+
     }
 }

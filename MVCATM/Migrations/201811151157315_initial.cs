@@ -3,7 +3,7 @@ namespace MVCATM.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class InitialMigration : DbMigration
+    public partial class initial : DbMigration
     {
         public override void Up()
         {
@@ -29,16 +29,32 @@ namespace MVCATM.Migrations
                         Id = c.Int(nullable: false, identity: true),
                         Amount = c.Decimal(nullable: false, precision: 18, scale: 2),
                         CheckingAccountId = c.Int(nullable: false),
+                        TransactionStatusId = c.Int(nullable: false),
                     })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.CheckingAccounts", t => t.CheckingAccountId, cascadeDelete: true)
                 .Index(t => t.CheckingAccountId);
             
             CreateTable(
+                "dbo.TransactionStatus",
+                c => new
+                    {
+                        ID = c.Int(nullable: false),
+                        processStatus = c.Int(nullable: false),
+                        StatusMessage = c.String(),
+                        TransactionTime = c.DateTime(nullable: false),
+                        TransactionId = c.Int(nullable: false),
+                    })
+                .PrimaryKey(t => t.ID)
+                .ForeignKey("dbo.Transactions", t => t.ID)
+                .Index(t => t.ID);
+            
+            CreateTable(
                 "dbo.AspNetUsers",
                 c => new
                     {
                         Id = c.String(nullable: false, maxLength: 128),
+                        Pin = c.String(),
                         Email = c.String(maxLength: 256),
                         EmailConfirmed = c.Boolean(nullable: false),
                         PasswordHash = c.String(),
@@ -102,46 +118,32 @@ namespace MVCATM.Migrations
                 .PrimaryKey(t => t.Id)
                 .Index(t => t.Name, unique: true, name: "RoleNameIndex");
             
-            CreateTable(
-                "dbo.TransactionStatus",
-                c => new
-                    {
-                        ID = c.Int(nullable: false, identity: true),
-                        processStatus = c.Int(nullable: false),
-                        StatusMessage = c.String(),
-                        TransactionTime = c.DateTime(nullable: false),
-                        TransactionId = c.Int(nullable: false),
-                    })
-                .PrimaryKey(t => t.ID)
-                .ForeignKey("dbo.Transactions", t => t.TransactionId, cascadeDelete: true)
-                .Index(t => t.TransactionId);
-            
         }
         
         public override void Down()
         {
-            DropForeignKey("dbo.TransactionStatus", "TransactionId", "dbo.Transactions");
             DropForeignKey("dbo.AspNetUserRoles", "RoleId", "dbo.AspNetRoles");
             DropForeignKey("dbo.CheckingAccounts", "ApplicationUserId", "dbo.AspNetUsers");
             DropForeignKey("dbo.AspNetUserRoles", "UserId", "dbo.AspNetUsers");
             DropForeignKey("dbo.AspNetUserLogins", "UserId", "dbo.AspNetUsers");
             DropForeignKey("dbo.AspNetUserClaims", "UserId", "dbo.AspNetUsers");
+            DropForeignKey("dbo.TransactionStatus", "ID", "dbo.Transactions");
             DropForeignKey("dbo.Transactions", "CheckingAccountId", "dbo.CheckingAccounts");
-            DropIndex("dbo.TransactionStatus", new[] { "TransactionId" });
             DropIndex("dbo.AspNetRoles", "RoleNameIndex");
             DropIndex("dbo.AspNetUserRoles", new[] { "RoleId" });
             DropIndex("dbo.AspNetUserRoles", new[] { "UserId" });
             DropIndex("dbo.AspNetUserLogins", new[] { "UserId" });
             DropIndex("dbo.AspNetUserClaims", new[] { "UserId" });
             DropIndex("dbo.AspNetUsers", "UserNameIndex");
+            DropIndex("dbo.TransactionStatus", new[] { "ID" });
             DropIndex("dbo.Transactions", new[] { "CheckingAccountId" });
             DropIndex("dbo.CheckingAccounts", new[] { "ApplicationUserId" });
-            DropTable("dbo.TransactionStatus");
             DropTable("dbo.AspNetRoles");
             DropTable("dbo.AspNetUserRoles");
             DropTable("dbo.AspNetUserLogins");
             DropTable("dbo.AspNetUserClaims");
             DropTable("dbo.AspNetUsers");
+            DropTable("dbo.TransactionStatus");
             DropTable("dbo.Transactions");
             DropTable("dbo.CheckingAccounts");
         }

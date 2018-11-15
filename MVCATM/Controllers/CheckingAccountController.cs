@@ -114,5 +114,10 @@ namespace MVCATM.Controllers
                 return View();
             }
         }
+        public ActionResult Statement(int checkingAccountId)
+        {
+            List<Transaction> transactions = repository.GetTransactionsByCheckingAccount(checkingAccountId);
+            return View(transactions);
+        }
     }
 }

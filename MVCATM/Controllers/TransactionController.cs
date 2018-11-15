@@ -127,7 +127,7 @@ namespace MVCATM.Controllers
                     }
                     else
                     {
-                        String message = "Insufficient balance.Cannot proceed withdrawal";
+                      
                          ModelState.AddModelError("Amount", "Insufficient balance.Cannot proceed withdrawal");
                         return View(transaction);
                     }

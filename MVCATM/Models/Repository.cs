@@ -106,5 +106,11 @@ namespace MVCATM.Models
         {
             return this.applicationDbContext.Transactions.ToList();
         }
+
+        public List<Transaction> GetTransactionsByCheckingAccount(int checkingAccountId)
+        {
+            var checkingAccount = this.applicationDbContext.CheckingAccounts.Find(checkingAccountId);
+            return this.applicationDbContext.Transactions.Include(x => x.TransactionStatus).ToList<Transaction>();
+        }
     }
 }

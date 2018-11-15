@@ -202,17 +202,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201811102341582_InitialMigration.cs" />
-    <Compile Include="Migrations\201811102341582_InitialMigration.Designer.cs">
-      <DependentUpon>201811102341582_InitialMigration.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201811110825461_pin.cs" />
-    <Compile Include="Migrations\201811110825461_pin.Designer.cs">
-      <DependentUpon>201811110825461_pin.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201811111013218_admin.cs" />
-    <Compile Include="Migrations\201811111013218_admin.Designer.cs">
-      <DependentUpon>201811111013218_admin.cs</DependentUpon>
+    <Compile Include="Migrations\201811151157315_initial.cs" />
+    <Compile Include="Migrations\201811151157315_initial.Designer.cs">
+      <DependentUpon>201811151157315_initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -277,6 +269,8 @@
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\knockout-3.4.2.debug.js" />
+    <Content Include="Scripts\knockout-3.4.2.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Scripts\popper-utils.js" />
     <Content Include="Scripts\popper-utils.min.js" />
@@ -297,7 +291,9 @@
     <Content Include="Scripts\WebForms\MSAjax\MicrosoftAjaxTimer.js" />
     <Content Include="Scripts\WebForms\MSAjax\MicrosoftAjaxWebForms.js" />
     <Content Include="Scripts\WebForms\MSAjax\MicrosoftAjaxWebServices.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -346,6 +342,7 @@
     <Content Include="Views\Transaction\Withdraw.cshtml" />
     <Content Include="Views\CheckingAccount\List.cshtml" />
     <Content Include="Views\Home\_ContactThanks.cshtml" />
+    <Content Include="Views\CheckingAccount\Statement.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -362,14 +359,8 @@
     <TypeScriptCompile Include="Scripts\index.d.ts" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201811102341582_InitialMigration.resx">
-      <DependentUpon>201811102341582_InitialMigration.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201811110825461_pin.resx">
-      <DependentUpon>201811110825461_pin.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201811111013218_admin.resx">
-      <DependentUpon>201811111013218_admin.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201811151157315_initial.resx">
+      <DependentUpon>201811151157315_initial.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

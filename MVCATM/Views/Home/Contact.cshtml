@@ -39,13 +39,16 @@
     <h3 class="col-form-label-lg">@ViewBag.Message</h3>
     <img src="~/Content/Images/loading.gif" id="progress" style="display:none;height:60px;width:60px" />
     <form method="post" id="contactForm">
-        <textarea name="message" id="message" class="form-control-lg" rows="5"></textarea>
+        <textarea name="message" id="message" class="form-control-lg" rows="5" maxlength="150" data-bind="value:message,valueUpdate:'input'"></textarea>
         <br/>
-        <input type="submit" value="send" class="btn btn-primary" />
+        <input type="submit" value="send" class="btn btn-primary" />       
+        <span class="col-form-label-sm" data-bind="text:charactersRemaining"></span> characters remaining.
+        <br/>
     </form>
 
 </div>
 @section scripts{
+    <script src="~/Scripts/knockout-3.4.2.js"></script>
     <script>
         $('#contactForm').submit(function () {
             $('#progress').show();
@@ -56,6 +59,14 @@
                         2000);
                 });
             return false;
-          });
+        });
+        function ContactViewModel() {
+            var self = this;
+            self.message = ko.observable('');
+            self.charactersRemaining = ko.computed(function () {
+                return 150 - self.message().length;
+            });
+        }
+        ko.applyBindings(new ContactViewModel());
     </script>
     }
