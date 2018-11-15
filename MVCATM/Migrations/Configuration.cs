@@ -17,6 +17,7 @@ namespace MVCATM.Migrations
         {
             AutomaticMigrationsEnabled = true;
             repository = new Repository(new ApplicationDbContext());
+            AutomaticMigrationDataLossAllowed = true;
         }
 
         protected override void Seed(MVCATM.Models.ApplicationDbContext context)

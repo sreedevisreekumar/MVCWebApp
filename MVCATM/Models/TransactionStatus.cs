@@ -17,6 +17,7 @@ namespace MVCATM.Models
         public TransactionProcessStatus processStatus { get; set; } 
         public String StatusMessage{ get; set; }
         [Required]
+        [DataType(DataType.DateTime)]
         public DateTime TransactionTime { get; set; }
         [Required]
         public virtual Transaction transaction { get; set; }
