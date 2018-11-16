@@ -16,8 +16,9 @@ namespace MVCATM.Migrations
         public Configuration()
         {
             AutomaticMigrationsEnabled = true;
-            repository = new Repository(new ApplicationDbContext());
             AutomaticMigrationDataLossAllowed = true;
+            repository = new Repository(new ApplicationDbContext());
+          
         }
 
         protected override void Seed(MVCATM.Models.ApplicationDbContext context)
@@ -41,26 +42,26 @@ namespace MVCATM.Migrations
                 context.SaveChanges();
 
                 userManager.AddToRole(user.Id, "Admin");
-                checkingAccount = repository.GetAccountByUserId(user.Id);
+                //checkingAccount = repository.GetAccountByUserId(user.Id);
 
-                var transaction = new Transaction { Amount = 100, CheckingAccountId = checkingAccount.Id };
-                List<Transaction> transactions = new List<Transaction> { transaction};
-                for(int i=0;i<20;i++)
-                {
-                    if(i%2 == 0)
-                    {
-                        transaction = new Transaction { Amount = 200, CheckingAccountId = checkingAccount.Id };
-                    }
-                    else
-                    {
-                        transaction = new Transaction { Amount = -50, CheckingAccountId = checkingAccount.Id };
-                    }
-                    transactions.Add(transaction);
-                }
-                foreach(Transaction trans in transactions)
-                {
-                    service.MakeTransaction(trans);
-                }
+                //var transaction = new Transaction { Amount = 100, CheckingAccountId = checkingAccount.Id };
+                //List<Transaction> transactions = new List<Transaction> { transaction};
+                //for(int i=0;i<20;i++)
+                //{
+                //    if(i%2 == 0)
+                //    {
+                //        transaction = new Transaction { Amount = 200, CheckingAccountId = checkingAccount.Id };
+                //    }
+                //    else
+                //    {
+                //        transaction = new Transaction { Amount = -50, CheckingAccountId = checkingAccount.Id };
+                //    }
+                //    transactions.Add(transaction);
+                //}
+                //foreach(Transaction trans in transactions)
+                //{
+                //    service.MakeTransaction(trans);
+                //}
 
             }
            
