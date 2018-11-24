@@ -222,21 +222,35 @@ namespace MVCATM.Tests.Controllers
             //verify pre insert
             int transactionCount = transactions.Count;
             Assert.AreEqual(1, transactionCount); // Verify the expected Number pre-insert
-
-            //Act
-            var result = controller.QuickCash(mockCheckingAccount.Id) as RedirectToRouteResult;
-            int resultStatusId = Convert.ToInt32(result.RouteValues["Id"]);
-
-                    
-            TransactionStatus latestStatus = transactionStatuses
-               .Where(t => t.TransactionId == resultStatusId).FirstOrDefault<TransactionStatus>();
-            Assert.IsNotNull(latestStatus);
-
+            
             CheckingAccount checkingAccount = checkingAccounts.Where(t => t.Id == mockCheckingAccount.Id).FirstOrDefault<CheckingAccount>();
             Decimal currentBalance = checkingAccount.Balance;
-            //Ran a withdrawal of 100
-            Assert.AreEqual(currentBalance, 0);
-            Assert.AreEqual(TransactionProcessStatus.Success, latestStatus.processStatus); // Verify it has the expected status
+            if (currentBalance >= 100)
+            {
+                //Act
+                var result = controller.QuickCash(mockCheckingAccount.Id) as RedirectToRouteResult;
+                int resultStatusId = Convert.ToInt32(result.RouteValues["Id"]);
+
+
+                TransactionStatus latestStatus = transactionStatuses
+                   .Where(t => t.TransactionId == resultStatusId).FirstOrDefault<TransactionStatus>();
+                Assert.IsNotNull(latestStatus);
+
+                checkingAccount = checkingAccounts.Where(t => t.Id == mockCheckingAccount.Id).FirstOrDefault<CheckingAccount>();
+                currentBalance = checkingAccount.Balance;
+                //Ran a withdrawal of 100
+                Assert.AreEqual(currentBalance, 0);
+                Assert.AreEqual(TransactionProcessStatus.Success, latestStatus.processStatus); // Verify it has the expected status
+            }
+            else
+            {
+                //Act
+                var result = controller.QuickCash(mockCheckingAccount.Id) as ViewResult;
+                bool modelState = result.ViewData.ModelState.IsValid;
+                //Assert
+
+                Assert.IsFalse(modelState);
+            }
 
         }
     }
