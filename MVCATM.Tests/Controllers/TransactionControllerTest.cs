@@ -227,14 +227,9 @@ namespace MVCATM.Tests.Controllers
             var result = controller.QuickCash(mockCheckingAccount.Id) as RedirectToRouteResult;
             int resultStatusId = Convert.ToInt32(result.RouteValues["Id"]);
 
-            //Assert
-            //transactionCount = transactions.Count;
-            //Assert.AreEqual(2, transactionCount);
-
-            Transaction latestTran = transactions
-                .Where(t => t.CheckingAccountId == mockCheckingAccount.Id).LastOrDefault<Transaction>();
+                    
             TransactionStatus latestStatus = transactionStatuses
-               .Where(t => t.TransactionId == latestTran.Id).LastOrDefault<TransactionStatus>();
+               .Where(t => t.TransactionId == resultStatusId).FirstOrDefault<TransactionStatus>();
             Assert.IsNotNull(latestStatus);
 
             CheckingAccount checkingAccount = checkingAccounts.Where(t => t.Id == mockCheckingAccount.Id).FirstOrDefault<CheckingAccount>();
