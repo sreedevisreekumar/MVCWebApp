@@ -52,8 +52,7 @@ namespace MVCATM.Migrations
                 service.MakeTransaction(transactionInitial);               
                 
 
-                Transaction transactionInitial = new Transaction { Amount = 1000, checkingAccount = checkingAccount, CheckingAccountId = checkingAccount.Id };
-                service.MakeTransaction(transactionInitial);
+                
                 //checkingAccount = repository.GetAccountByUserId(user.Id);
 
                 //var transaction = new Transaction { Amount = 100, CheckingAccountId = checkingAccount.Id };
