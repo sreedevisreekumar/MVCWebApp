@@ -19,7 +19,7 @@ namespace MVCATM.Tests.Controllers
         {
             AccountNumber = "9999123",
             ApplicationUserId = "mockuserId",
-            Balance = 100,
+            Balance = 10,
             FirstName = "Test",
             LastName = "User",
             Id = 100,

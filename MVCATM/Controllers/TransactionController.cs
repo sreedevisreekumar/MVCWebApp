@@ -174,7 +174,7 @@ namespace MVCATM.Controllers
                     {
 
                         ModelState.AddModelError("Amount", "Insufficient balance.Cannot proceed withdrawal");
-                        return RedirectToAction("Withdraw",transaction);
+                        return View("Withdraw",transaction);
                     }
                 }
                 else
