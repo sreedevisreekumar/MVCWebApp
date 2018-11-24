@@ -37,10 +37,11 @@ namespace MVCATM.Tests.Controllers
             checkingAccount = mockCheckingAccount,
             CheckingAccountId = 100
         };
-        public  List<Transaction> transactions = new List<Transaction>
+        public static Transaction mockInvalidTransaction = new Transaction
         {
-            new Transaction{Amount=100,checkingAccount=mockCheckingAccount,CheckingAccountId =100,Id=1}
-
+            Amount = 1000,
+            checkingAccount = mockCheckingAccount,
+            CheckingAccountId = 100
         };
 
         public static TransactionStatus mockDepositTransactionStatus = new TransactionStatus
@@ -55,6 +56,11 @@ namespace MVCATM.Tests.Controllers
         public  List<TransactionStatus> transactionStatuses = new List<TransactionStatus>
         {
             mockDepositTransactionStatus
+        };
+        public List<Transaction> transactions = new List<Transaction>
+        {
+            new Transaction{Amount=100,checkingAccount=mockCheckingAccount,CheckingAccountId =100,Id=1,TransactionStatus=mockDepositTransactionStatus,TransactionStatusId=mockDepositTransactionStatus.ID}
+
         };
         public TransactionControllerTest()
         {
@@ -94,11 +100,19 @@ namespace MVCATM.Tests.Controllers
                ).Returns(
                (TransactionStatus transactionstatus) =>
                {
-                   transactionstatus.ID = transactionstatus.ID + 1;
+                   transactionstatus.ID = transactionStatuses.Count + 1;
                    transactionStatuses.Add(transactionstatus);
                    return transactionstatus;
                }
                );
+            mockRepository.Setup(
+            mr => mr.GetStatusById(It.IsAny<int>())
+            ).Returns(
+            (int id) =>
+            {
+                return transactionStatuses.Where(t => t.ID == id).FirstOrDefault<TransactionStatus>();
+            }
+            );
         }
 
         [TestMethod]
@@ -137,19 +151,26 @@ namespace MVCATM.Tests.Controllers
             Assert.AreEqual(1, transactionCount); // Verify the expected Number pre-insert
 
             //Act
-            var result = controller.Deposit(mockValidTransaction) as ViewResult;
-
+            //Deposit of 10
+            var result = controller.Deposit(mockValidTransaction) as RedirectToRouteResult;
+            int resultStatusId = Convert.ToInt32(result.RouteValues["Id"]);
             //Assert
-            transactionCount = transactions.Count;
-            Assert.AreEqual(2, transactionCount);
+            
+            Assert.AreEqual(2, resultStatusId);
+            Assert.AreEqual(2, transactions.Count);
 
             Transaction latestTran = transactions
                 .Where(t=>t.CheckingAccountId==mockValidTransaction.CheckingAccountId).LastOrDefault<Transaction>();
+
             TransactionStatus latestStatus = transactionStatuses
                .Where(t => t.TransactionId == latestTran.Id).LastOrDefault<TransactionStatus>();
             Assert.IsNotNull(latestStatus); // Test if null
             
-            Assert.AreEqual(TransactionProcessStatus.Success,latestStatus.processStatus); // Verify it has the expected productid
+            Assert.AreEqual(TransactionProcessStatus.Success,latestStatus.processStatus); // Verify it has success status
+
+            CheckingAccount mockCheckingAccount = latestTran.checkingAccount;
+            Decimal balance = mockCheckingAccount.Balance;
+            Assert.AreEqual(110, balance);
         }
         [TestMethod]
         public void Create_Withdrawal_Valid_Result_TransactionStatus()
@@ -161,8 +182,8 @@ namespace MVCATM.Tests.Controllers
             Assert.AreEqual(1, transactionCount); // Verify the expected Number pre-insert
 
             //Act
-            var result = controller.Withdraw(mockValidTransaction) as ViewResult;
-
+            var result = controller.Withdraw(mockValidTransaction) as RedirectToRouteResult;
+            int resultStatusId = Convert.ToInt32(result.RouteValues["Id"]);
             //Assert
             transactionCount = transactions.Count;
             Assert.AreEqual(2, transactionCount);
@@ -177,7 +198,51 @@ namespace MVCATM.Tests.Controllers
             Decimal currentBalance = checkingAccount.Balance;
             //Ran a withdrawal of 10
             Assert.AreEqual(currentBalance, 90);
-            Assert.AreEqual(TransactionProcessStatus.Success, latestStatus.processStatus); // Verify it has the expected productid
+            Assert.AreEqual(TransactionProcessStatus.Success, latestStatus.processStatus); // Verify it has the expected status
+        }
+        [TestMethod]
+        public void Create_Withdrawal_Insufficient_Balance()
+        {
+            //Arrange
+            var controller = new TransactionController(mockRepository.Object);
+            
+            //Act
+            var result = controller.Withdraw(mockInvalidTransaction) as ViewResult;
+            bool modelState = result.ViewData.ModelState.IsValid;
+            //Assert
+
+            Assert.IsFalse(modelState);
+            
+        }
+        [TestMethod]
+        public void Create_QuickCash_Valid_Redirect_TransactionStatus()
+        {
+            //Arrange
+            var controller = new TransactionController(mockRepository.Object);
+            //verify pre insert
+            int transactionCount = transactions.Count;
+            Assert.AreEqual(1, transactionCount); // Verify the expected Number pre-insert
+
+            //Act
+            var result = controller.QuickCash(mockCheckingAccount.Id) as RedirectToRouteResult;
+            int resultStatusId = Convert.ToInt32(result.RouteValues["Id"]);
+
+            //Assert
+            transactionCount = transactions.Count;
+            Assert.AreEqual(2, transactionCount);
+
+            Transaction latestTran = transactions
+                .Where(t => t.CheckingAccountId == mockValidTransaction.CheckingAccountId).LastOrDefault<Transaction>();
+            TransactionStatus latestStatus = transactionStatuses
+               .Where(t => t.TransactionId == latestTran.Id).LastOrDefault<TransactionStatus>();
+            Assert.IsNotNull(latestStatus);
+
+            CheckingAccount checkingAccount = checkingAccounts.Where(t => t.Id == latestTran.CheckingAccountId).FirstOrDefault<CheckingAccount>();
+            Decimal currentBalance = checkingAccount.Balance;
+            //Ran a withdrawal of 100
+            Assert.AreEqual(currentBalance, 0);
+            Assert.AreEqual(TransactionProcessStatus.Success, latestStatus.processStatus); // Verify it has the expected status
+
         }
     }
 }

@@ -110,7 +110,10 @@ namespace MVCATM.Models
         public List<Transaction> GetTransactionsByCheckingAccount(int checkingAccountId)
         {
             var checkingAccount = this.applicationDbContext.CheckingAccounts.Find(checkingAccountId);
-            return this.applicationDbContext.Transactions.Include(x => x.TransactionStatus).ToList<Transaction>();
+            return this.applicationDbContext.Transactions.Include(x => x.TransactionStatus)
+                .Where(t=>t.CheckingAccountId == checkingAccountId)
+                .OrderByDescending(t=>t.TransactionStatus.TransactionTime)
+                .ToList<Transaction>();
         }
     }
 }
