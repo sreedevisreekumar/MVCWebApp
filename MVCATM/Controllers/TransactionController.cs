@@ -144,6 +144,51 @@ namespace MVCATM.Controllers
 
         }
 
+        //Transaction/QuickCash$100
+        
+        public ActionResult QuickCash(int checkingAccountId)
+        {
+            CheckingAccount checkingAccount = repository.GetCheckingAccountById(checkingAccountId);
+            Transaction transaction = new Transaction
+            {
+                Amount = 100,
+                checkingAccount = checkingAccount,
+                CheckingAccountId = checkingAccountId
+            };
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    // TODO: Add insert logic here
+                    Decimal amount = transaction.Amount;
+
+                    Decimal balance = checkingAccount.Balance;
+                   
+                    if (balance >= amount)
+                    {
+
+                        TransactionStatus transactionStatus = this.checkingAccountService.MakeWithDrawal(transaction);
+                        return RedirectToAction("Details", "TransactionStatus", routeValues: new { Id = transactionStatus.ID });
+                    }
+                    else
+                    {
+
+                        ModelState.AddModelError("Amount", "Insufficient balance.Cannot proceed withdrawal");
+                        return RedirectToAction("Withdraw",transaction);
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Withdraw", transaction);
+                }
+            }
+            catch(Exception ex)
+            {
+                return RedirectToAction("Withdraw", transaction);
+            }
+           
+        }
+
         // GET: Transaction/Edit/5
         public ActionResult Edit(int id)
         {
