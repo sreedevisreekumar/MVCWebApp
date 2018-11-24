@@ -35,13 +35,20 @@ namespace MVCATM.Migrations
                 var user = new ApplicationUser { UserName = "admin@mvcatm.com", Email = "admin@mvcatm.com", Pin = "8975" };
                 userManager.Create(user, "passW0rd!");
 
-                var service = new CheckingAccountService(new Repository(context));
-                service.CreateCheckingAccount("admin", "user", user.Id, 1000);
-
                 context.Roles.AddOrUpdate(r => r.Name, new IdentityRole { Name = "Admin" });
                 context.SaveChanges();
 
                 userManager.AddToRole(user.Id, "Admin");
+
+                Repository repository = new Repository(context);
+
+                var service = new CheckingAccountService(repository);
+                service.CreateCheckingAccount("admin", "user", user.Id, 0);
+
+                checkingAccount = repository.GetAccountByUserId(user.Id);
+
+                Transaction transactionInitial = new Transaction { Amount = 1000, checkingAccount = checkingAccount, CheckingAccountId = checkingAccount.Id };
+                service.MakeTransaction(transactionInitial);
                 //checkingAccount = repository.GetAccountByUserId(user.Id);
 
                 //var transaction = new Transaction { Amount = 100, CheckingAccountId = checkingAccount.Id };
