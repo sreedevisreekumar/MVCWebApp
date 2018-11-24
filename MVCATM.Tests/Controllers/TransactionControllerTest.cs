@@ -232,12 +232,12 @@ namespace MVCATM.Tests.Controllers
             //Assert.AreEqual(2, transactionCount);
 
             Transaction latestTran = transactions
-                .Where(t => t.CheckingAccountId == mockValidTransaction.CheckingAccountId).LastOrDefault<Transaction>();
+                .Where(t => t.CheckingAccountId == mockCheckingAccount.Id).LastOrDefault<Transaction>();
             TransactionStatus latestStatus = transactionStatuses
                .Where(t => t.TransactionId == latestTran.Id).LastOrDefault<TransactionStatus>();
             Assert.IsNotNull(latestStatus);
 
-            CheckingAccount checkingAccount = checkingAccounts.Where(t => t.Id == latestTran.CheckingAccountId).FirstOrDefault<CheckingAccount>();
+            CheckingAccount checkingAccount = checkingAccounts.Where(t => t.Id == mockCheckingAccount.Id).FirstOrDefault<CheckingAccount>();
             Decimal currentBalance = checkingAccount.Balance;
             //Ran a withdrawal of 100
             Assert.AreEqual(currentBalance, 0);
