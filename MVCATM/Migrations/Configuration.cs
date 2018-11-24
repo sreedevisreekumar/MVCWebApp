@@ -2,6 +2,7 @@ namespace MVCATM.Migrations
 {
     using Microsoft.AspNet.Identity;
     using Microsoft.AspNet.Identity.EntityFramework;
+    using MVCATM.Controllers;
     using MVCATM.Models;
     using MVCATM.Services;
     using System;
@@ -46,6 +47,10 @@ namespace MVCATM.Migrations
                 service.CreateCheckingAccount("admin", "user", user.Id, 0);
 
                 checkingAccount = repository.GetAccountByUserId(user.Id);
+                
+                Transaction transactionInitial = new Transaction { Amount = 1000, checkingAccount = checkingAccount, CheckingAccountId = checkingAccount.Id };
+                service.MakeTransaction(transactionInitial);               
+                
 
                 Transaction transactionInitial = new Transaction { Amount = 1000, checkingAccount = checkingAccount, CheckingAccountId = checkingAccount.Id };
                 service.MakeTransaction(transactionInitial);
