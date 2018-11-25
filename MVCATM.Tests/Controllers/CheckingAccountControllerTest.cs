@@ -14,50 +14,57 @@ namespace MVCATM.Tests.Controllers
     [TestClass]
   public  class CheckingAccountControllerTest
     {
-        private static Mock<IRepository> mockRepository;
-        public static CheckingAccount mockCheckingAccount = new CheckingAccount
-        {
-            AccountNumber = "9999123",
-            ApplicationUserId = "mockuserId",
-            Balance = 100,
-            FirstName = "Test",
-            LastName = "User",
-            Id = 100,
-            Transactions = null,
-            User = new ApplicationUser { Pin = "9999" }
-        };
-        public List<CheckingAccount> checkingAccounts = new List<CheckingAccount>
-        {
-            mockCheckingAccount
-        };
+        private Mock<IRepository> mockRepository;
+        private CheckingAccount mockCheckingAccount;
+        private List<CheckingAccount> checkingAccounts;
+        private Transaction mockValidTransaction;
+        private TransactionStatus mockDepositTransactionStatus;
+        private List<TransactionStatus> transactionStatuses;
+        private List<Transaction> transactions;
 
-        public static Transaction mockValidTransaction = new Transaction
-        {
-            Amount = 10,
-            checkingAccount = mockCheckingAccount,
-            CheckingAccountId = 100
-        };
-        public static TransactionStatus mockDepositTransactionStatus = new TransactionStatus
-        {
-            ID = 1,
-            processStatus = TransactionProcessStatus.Success,
-            StatusMessage = "Transaction of amount 100 to 9999123 on 18:50 by Test User was success",
-            transaction = mockValidTransaction,
-            TransactionId = 1,
-            TransactionTime = Convert.ToDateTime("2018-11-12 18:50:22.550")
-        };
-        public List<TransactionStatus> transactionStatuses = new List<TransactionStatus>
-        {
-            mockDepositTransactionStatus
-        };
-        public List<Transaction> transactions = new List<Transaction>
-        {
-            new Transaction{Amount=100,checkingAccount=mockCheckingAccount,CheckingAccountId =100,Id=1,TransactionStatus =mockDepositTransactionStatus,TransactionStatusId =mockDepositTransactionStatus.ID }
-
-        };
         public CheckingAccountControllerTest()
         {
             mockRepository = new Mock<IRepository>();
+
+            this.mockCheckingAccount = new CheckingAccount
+            {
+                AccountNumber = "9999123",
+                ApplicationUserId = "mockuserId",
+                Balance = 100,
+                FirstName = "Test",
+                LastName = "User",
+                Id = 100,
+                Transactions = null,
+                User = new ApplicationUser { Pin = "9999" }
+            };
+           this.checkingAccounts = new List<CheckingAccount>
+            {
+                mockCheckingAccount
+            };
+            this.mockValidTransaction = new Transaction
+            {
+                Amount = 10,
+                checkingAccount = mockCheckingAccount,
+                CheckingAccountId = 100
+            };
+            this.mockDepositTransactionStatus = new TransactionStatus
+            {
+                ID = 1,
+                processStatus = TransactionProcessStatus.Success,
+                StatusMessage = "Transaction of amount 100 to 9999123 on 18:50 by Test User was success",
+                transaction = mockValidTransaction,
+                TransactionId = 1,
+                TransactionTime = Convert.ToDateTime("2018-11-12 18:50:22.550")
+            };
+           this.transactions = new List<Transaction>
+             {
+                new Transaction{Amount=100,checkingAccount=mockCheckingAccount,CheckingAccountId =100,Id=1,TransactionStatus =mockDepositTransactionStatus,TransactionStatusId =mockDepositTransactionStatus.ID }
+
+            };
+            this.transactionStatuses = new List<TransactionStatus>
+            {
+            mockDepositTransactionStatus
+           };
             mockRepository.Setup(
                m => m.GetCheckingAccountById(It.IsAny<int>())
                                ).Returns(mockCheckingAccount);

@@ -14,57 +14,69 @@ namespace MVCATM.Tests.Controllers
     [TestClass]
     public class TransactionControllerTest
     {
-        private static Mock<IRepository> mockRepository;
-        public static CheckingAccount mockCheckingAccount = new CheckingAccount
-        {
-            AccountNumber = "9999123",
-            ApplicationUserId = "mockuserId",
-            Balance = 100,
-            FirstName = "Test",
-            LastName = "User",
-            Id = 100,
-            Transactions = null,
-            User = new ApplicationUser { Pin = "9999" }
-        };
-        public List<CheckingAccount> checkingAccounts = new List<CheckingAccount>
-        {
-            mockCheckingAccount
-        };
-
-        public static Transaction mockValidTransaction = new Transaction
-        {
-            Amount = 10,
-            checkingAccount = mockCheckingAccount,
-            CheckingAccountId = 100
-        };
-        public static Transaction mockInvalidTransaction = new Transaction
-        {
-            Amount = 1000,
-            checkingAccount = mockCheckingAccount,
-            CheckingAccountId = 100
-        };
-
-        public static TransactionStatus mockDepositTransactionStatus = new TransactionStatus
-        {
-            ID = 1,
-            processStatus = TransactionProcessStatus.Success,
-            StatusMessage = "Transaction of amount 100 to 9999123 on 18:50 by Test User was success",
-            transaction = mockValidTransaction,
-            TransactionId = 1,
-            TransactionTime = Convert.ToDateTime("2018-11-12 18:50:22.550")
-        };
-        public List<TransactionStatus> transactionStatuses = new List<TransactionStatus>
-        {
-            mockDepositTransactionStatus
-        };
-        public List<Transaction> transactions = new List<Transaction>
-        {
-            new Transaction{Amount=100,checkingAccount=mockCheckingAccount,CheckingAccountId =100,Id=1,TransactionStatus=mockDepositTransactionStatus,TransactionStatusId=mockDepositTransactionStatus.ID}
-
-        };
+        private  Mock<IRepository> mockRepository;
+        private CheckingAccount mockCheckingAccount;
+        private List<CheckingAccount> checkingAccounts;
+        private Transaction mockValidTransaction;
+        private Transaction mockInvalidTransaction;
+        private TransactionStatus mockDepositTransactionStatus;
+        private List<TransactionStatus> transactionStatuses;
+        private List<Transaction> transactions;
+      
         public TransactionControllerTest()
         {
-            mockRepository = new Mock<IRepository>();
+           this.mockRepository = new Mock<IRepository>();
+
+           this.mockCheckingAccount = new CheckingAccount
+           {
+               AccountNumber = "9999123",
+               ApplicationUserId = "mockuserId",
+               Balance = 100,
+               FirstName = "Test",
+               LastName = "User",
+               Id = 100,
+               Transactions = null,
+               User = new ApplicationUser { Pin = "9999" }
+           };
+
+           
+
+           this.mockValidTransaction = new Transaction
+            {
+                Amount = 10,
+                checkingAccount = mockCheckingAccount,
+                CheckingAccountId = 100
+            };
+            this.mockInvalidTransaction = new Transaction
+            {
+                Amount = 1000,
+                checkingAccount = mockCheckingAccount,
+                CheckingAccountId = 100
+            };
+
+           this.mockDepositTransactionStatus = new TransactionStatus
+            {
+                ID = 1,
+                processStatus = TransactionProcessStatus.Success,
+                StatusMessage = "Transaction of amount 100 to 9999123 on 18:50 by Test User was success",
+                transaction = mockValidTransaction,
+                TransactionId = 1,
+                TransactionTime = Convert.ToDateTime("2018-11-12 18:50:22.550")
+            };
+
+            this.checkingAccounts = new List<CheckingAccount>
+           {
+            this.mockCheckingAccount
+          };
+            this.transactionStatuses = new List<TransactionStatus>
+            {
+            mockDepositTransactionStatus
+           };
+            this.transactions = new List<Transaction>
+          {
+            new Transaction{Amount=100,checkingAccount=this.mockCheckingAccount,CheckingAccountId =100,Id=1,TransactionStatus=mockDepositTransactionStatus,TransactionStatusId=mockDepositTransactionStatus.ID}
+
+          };
             mockRepository.Setup(
                m => m.GetCheckingAccountById(It.IsAny<int>())
                                ).Returns(mockCheckingAccount);
@@ -122,6 +134,8 @@ namespace MVCATM.Tests.Controllers
 
             var controller = new TransactionController(mockRepository.Object);
 
+            
+
             //Act
             var result = controller.Deposit(100) as ViewResult;
             var transaction = (Transaction)result.ViewData.Model;
@@ -135,6 +149,8 @@ namespace MVCATM.Tests.Controllers
         {
             //Arrange
             var controller = new TransactionController(mockRepository.Object);
+         
+
             RedirectToRouteResult result = (RedirectToRouteResult)controller.Deposit(mockValidTransaction);
             //Assert
             Assert.AreEqual("Details", result.RouteValues["Action"]);
@@ -146,6 +162,8 @@ namespace MVCATM.Tests.Controllers
         {
             //Arrange
             var controller = new TransactionController(mockRepository.Object);
+
+            
             //verify pre insert
             int transactionCount = transactions.Count;
             Assert.AreEqual(1, transactionCount); // Verify the expected Number pre-insert
@@ -177,6 +195,7 @@ namespace MVCATM.Tests.Controllers
         {
             //Arrange
             var controller = new TransactionController(mockRepository.Object);
+            
             //verify pre insert
             int transactionCount = transactions.Count;
             Assert.AreEqual(1, transactionCount); // Verify the expected Number pre-insert
@@ -205,6 +224,7 @@ namespace MVCATM.Tests.Controllers
         {
             //Arrange
             var controller = new TransactionController(mockRepository.Object);
+           
 
             //Act
             var result = controller.Withdraw(mockInvalidTransaction) as ViewResult;
@@ -219,6 +239,7 @@ namespace MVCATM.Tests.Controllers
         {
             //Arrange
             var controller = new TransactionController(mockRepository.Object);
+         
             //verify pre insert
             int transactionCount = transactions.Count;
             Assert.AreEqual(1, transactionCount); // Verify the expected Number pre-insert

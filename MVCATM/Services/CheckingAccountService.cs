@@ -67,7 +67,7 @@ namespace MVCATM.Services
                 transactionStatus = repository.AddTransactionStatus(transactionStatus);
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
                 
