@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using MVCATM.Models;
 using MVCATM.Services;
 
+
 namespace MVCATM.Controllers
 {
     [Authorize]
@@ -192,7 +193,68 @@ namespace MVCATM.Controllers
             }
            
         }
+        // GET: Transaction/Transfer
+        public ActionResult Transfer(int checkingAccountId)
+        {
+            CheckingAccount fromAccount = repository.GetCheckingAccountById(checkingAccountId);
 
+            TransferViewModel transferViewModel = new TransferViewModel
+            {
+                FromCheckingAccount=fromAccount,
+                FromCheckingAccountId =fromAccount.Id,
+                Amount=0,
+                ToAccountNumber=""
+
+            };
+            return View(transferViewModel);
+        }
+        [HttpPost]
+        public ActionResult Transfer(TransferViewModel transfer)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(transfer);
+            }
+            try
+            {
+                CheckingAccount checkingAccount =this.repository.GetAccountByNumber(transfer.ToAccountNumber);
+                if (checkingAccount != null)
+                {
+                    transfer.ToCheckingAccount = checkingAccount;
+                    transfer.ToCheckingAccountId = checkingAccount.Id;
+                    // TODO: Add insert logic here
+                    Decimal amount = transfer.Amount;
+                    CheckingAccount fromCheckingAccount = repository.GetCheckingAccountById(transfer.FromCheckingAccountId);
+                    transfer.FromCheckingAccount = fromCheckingAccount;
+                    Decimal balance = fromCheckingAccount.Balance;
+                    if (balance >= amount)
+                    {
+                        TransactionStatus transactionStatus = this.checkingAccountService.MakeTransfer(transfer);
+                        //  return RedirectToAction("Details", "TransactionStatus", routeValues: new { Id = transactionStatus.ID });
+                        return PartialView("_TransactionStatus", transactionStatus);
+                        
+                    }
+                    else
+                    {
+
+                        ModelState.AddModelError("Amount", "Insufficient balance.Cannot proceed withdrawal");
+                        return View("Transfer", transfer);
+                    }
+
+                }
+                else
+                {
+                    ModelState.AddModelError("ToAccountNumber", "Account does not exist");
+                    return View("Transfer", transfer);
+                }
+       
+                
+            }
+            catch(Exception ex)
+            {
+                return View();
+            }
+        }
         // GET: Transaction/Edit/5
         public ActionResult Edit(int id)
         {

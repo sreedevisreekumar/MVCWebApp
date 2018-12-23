@@ -22,7 +22,13 @@ namespace MVCATM.Tests.Controllers
         private TransactionStatus mockDepositTransactionStatus;
         private List<TransactionStatus> transactionStatuses;
         private List<Transaction> transactions;
-      
+
+        //Transfer
+        private CheckingAccount toCheckingAccount;
+        private TransferViewModel mockTransfer;
+        private TransferViewModel invalidAccountTransfer;
+        private TransferViewModel invalidAmountTransfer;
+
         public TransactionControllerTest()
         {
            this.mockRepository = new Mock<IRepository>();
@@ -38,10 +44,20 @@ namespace MVCATM.Tests.Controllers
                Transactions = null,
                User = new ApplicationUser { Pin = "9999" }
            };
+            this.toCheckingAccount = new CheckingAccount
+            {
+                AccountNumber = "5555123",
+                ApplicationUserId = "toUserId",
+                Balance = 0,
+                FirstName = "To",
+                LastName = "User",
+                Id = 1000,
+                Transactions = null,
+                User = new ApplicationUser { Pin = "5555" }
+            };
 
-           
 
-           this.mockValidTransaction = new Transaction
+            this.mockValidTransaction = new Transaction
             {
                 Amount = 10,
                 checkingAccount = mockCheckingAccount,
@@ -63,10 +79,40 @@ namespace MVCATM.Tests.Controllers
                 TransactionId = 1,
                 TransactionTime = Convert.ToDateTime("2018-11-12 18:50:22.550")
             };
-
+            this.mockTransfer = new TransferViewModel
+            {
+                Amount = 10,
+                FromCheckingAccount = mockCheckingAccount,
+                FromCheckingAccountId = mockCheckingAccount.Id,
+                Id = 250,
+                ToAccountNumber = "5555123",
+                ToCheckingAccount = toCheckingAccount,
+                ToCheckingAccountId = toCheckingAccount.Id,
+            };
+            this.invalidAccountTransfer = new TransferViewModel
+            {
+                Amount = 10,
+                FromCheckingAccount = mockCheckingAccount,
+                FromCheckingAccountId = mockCheckingAccount.Id,
+                Id = 250,
+                ToAccountNumber = "5555127",
+                ToCheckingAccount = toCheckingAccount,
+                ToCheckingAccountId = toCheckingAccount.Id,
+            };
+            this.invalidAmountTransfer = new TransferViewModel
+            {
+                Amount = 1000,
+                FromCheckingAccount = mockCheckingAccount,
+                FromCheckingAccountId = mockCheckingAccount.Id,
+                Id = 250,
+                ToAccountNumber = "5555123",
+                ToCheckingAccount = toCheckingAccount,
+                ToCheckingAccountId = toCheckingAccount.Id,
+            };
             this.checkingAccounts = new List<CheckingAccount>
            {
-            this.mockCheckingAccount
+            this.mockCheckingAccount,
+            this.toCheckingAccount
           };
             this.transactionStatuses = new List<TransactionStatus>
             {
@@ -76,7 +122,9 @@ namespace MVCATM.Tests.Controllers
           {
             new Transaction{Amount=100,checkingAccount=this.mockCheckingAccount,CheckingAccountId =100,Id=1,TransactionStatus=mockDepositTransactionStatus,TransactionStatusId=mockDepositTransactionStatus.ID}
 
-          };
+          };           
+
+           
             mockRepository.Setup(
                m => m.GetCheckingAccountById(It.IsAny<int>())
                                ).Returns(mockCheckingAccount);
@@ -125,6 +173,14 @@ namespace MVCATM.Tests.Controllers
                 return transactionStatuses.Where(t => t.ID == id).FirstOrDefault<TransactionStatus>();
             }
             );
+
+            mockRepository.Setup(
+                mr => mr.GetAccountByNumber(It.IsAny<string>())
+                ).Returns(
+              (string accountNumber) => 
+              {
+                  return checkingAccounts.Where(t => t.AccountNumber == accountNumber).FirstOrDefault<CheckingAccount>();
+              }  );
         }
 
         [TestMethod]
@@ -272,6 +328,79 @@ namespace MVCATM.Tests.Controllers
 
                 Assert.IsFalse(modelState);
             }
+
+        }
+
+        [TestMethod]
+        public void Transfer_Success_StatusView()
+        {
+            //Arrange
+            var controller = new TransactionController(mockRepository.Object);
+
+            //verify pre insert
+            decimal frmAccntBalance = mockCheckingAccount.Balance;
+            decimal toAccntBalance = toCheckingAccount.Balance;
+            Assert.AreEqual(frmAccntBalance, 100); // Verify the expected Number pre-insert
+            Assert.AreEqual(toAccntBalance, 0);
+
+            //Act
+            //var result = controller.Transfer(mockTransfer) as RedirectToRouteResult;
+            //int resultStatusId = Convert.ToInt32(result.RouteValues["Id"]);
+            PartialViewResult partialViewResult = controller.Transfer(mockTransfer) as PartialViewResult;
+            //Assert
+            Assert.AreEqual("_TransactionStatus", partialViewResult.ViewName);
+            TransactionStatus resultStatus = (TransactionStatus)partialViewResult.ViewData.Model;
+            
+            Assert.AreEqual(TransactionProcessStatus.Success,resultStatus.processStatus);
+
+     
+        }
+
+        [TestMethod]
+        public void Transfer_Failure_AccountNotExists()
+        {
+            //Arrange
+            var controller = new TransactionController(mockRepository.Object);
+
+            //verify pre insert
+            decimal frmAccntBalance = mockCheckingAccount.Balance;
+            decimal toAccntBalance = toCheckingAccount.Balance;
+            Assert.AreEqual(frmAccntBalance, 100); // Verify the expected Number pre-insert
+            Assert.AreEqual(toAccntBalance, 0);
+
+            //Act
+            var result = controller.Transfer(invalidAccountTransfer) as ViewResult;
+             bool modelState = result.ViewData.ModelState.IsValid;
+             
+              //Assert
+
+            Assert.IsFalse(modelState);
+            Assert.IsTrue(result.ViewData.ModelState["ToAccountNumber"].Errors.Count > 0);
+            Assert.IsTrue(result.ViewData.ModelState["ToAccountNumber"].Errors[0].ErrorMessage == "Account does not exist");
+
+        }
+
+        [TestMethod]
+        public void Transfer_Failure_InsufficientBalance()
+        {
+            //Arrange
+            var controller = new TransactionController(mockRepository.Object);
+
+            //verify pre insert
+            decimal frmAccntBalance = mockCheckingAccount.Balance;
+            decimal toAccntBalance = toCheckingAccount.Balance;
+            Assert.AreEqual(frmAccntBalance, 100); // Verify the expected Number pre-insert
+            Assert.AreEqual(toAccntBalance, 0);
+
+            //Act
+            var result = controller.Transfer(invalidAmountTransfer) as ViewResult;
+            bool modelState = result.ViewData.ModelState.IsValid;
+
+            //Assert
+
+            Assert.IsFalse(modelState);
+            Assert.IsTrue(result.ViewData.ModelState["Amount"].Errors.Count > 0);
+            Assert.IsTrue(result.ViewData.ModelState["Amount"].Errors[0].ErrorMessage == "Insufficient balance.Cannot proceed withdrawal");
 
         }
     }

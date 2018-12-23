@@ -12,6 +12,7 @@ namespace MVCATM.Models
         List<CheckingAccount> GetCheckingAccounts();
         List<Transaction> GetTransactions();
         CheckingAccount GetCheckingAccountById(int id);
+        CheckingAccount GetAccountByNumber(string accountNumber);
         CheckingAccount GetAccountByUserId(string userId);
         CheckingAccount CreateCheckingAccount(CheckingAccount checkingAccount);
         TransactionStatus GetStatusById(int id);

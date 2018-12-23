@@ -89,5 +89,93 @@ namespace MVCATM.Services
            TransactionStatus transactionStatus = MakeTransaction(transaction);
             return transactionStatus;
         }
+        public TransactionStatus MakeTransfer(TransferViewModel transfer)
+        {
+            TransactionStatus transactionStatus = new TransactionStatus { TransactionTime = DateTime.Now };
+            var date = DateTime.Now;
+            Transaction withDrawTransaction = new Transaction
+            {
+                Amount = transfer.Amount,
+                checkingAccount = transfer.FromCheckingAccount,
+                CheckingAccountId = transfer.FromCheckingAccountId
+            };
+            try
+            {
+                               
+                TransactionStatus wthDrawTranStatus = MakeWithDrawal(withDrawTransaction);
+                if (wthDrawTranStatus.processStatus == TransactionProcessStatus.Success)
+                {
+                    Transaction depositTransaction = new Transaction
+                    {
+                        Amount = transfer.Amount,
+                        checkingAccount = transfer.ToCheckingAccount,
+                        CheckingAccountId = transfer.ToCheckingAccountId
+                    };
+                    TransactionStatus depositTransStatus = MakeTransaction(depositTransaction);
+                    if (depositTransStatus.processStatus == TransactionProcessStatus.Success)
+                    {
+                      
+                        transactionStatus.StatusMessage = $"Transaction of {transfer.Amount} from {transfer.FromCheckingAccount.AccountNumber} to {transfer.ToCheckingAccount.AccountNumber} on {date:HH:mm} by {transfer.FromCheckingAccount.Name} was { transactionStatus.processStatus }";
+                        transactionStatus.transaction = depositTransaction;
+                        transactionStatus.TransactionId = depositTransaction.Id;
+                        transactionStatus.TransactionTime = DateTime.Now;
+                        transactionStatus = repository.AddTransactionStatus(transactionStatus);
+                        return transactionStatus;
+                    }
+                    else
+                    {
+                        //if deposit failed,cancel withdraw too by a reverse transaction.
+                        Transaction withDrawReversal = new Transaction
+                        {
+                            Amount = transfer.Amount,
+                            checkingAccount = transfer.FromCheckingAccount,
+                            CheckingAccountId = transfer.FromCheckingAccountId
+                        };
+                        TransactionStatus revTransStatus = MakeTransaction(withDrawReversal);
+                        if (revTransStatus.processStatus == TransactionProcessStatus.Success)
+                        {
+                            transactionStatus.StatusMessage = $"Transaction of {transfer.Amount} from {transfer.FromCheckingAccount.AccountNumber} to {transfer.ToCheckingAccount.AccountNumber} on {date:HH:mm} by {transfer.FromCheckingAccount.Name} was { transactionStatus.processStatus }";
+                            transactionStatus.transaction = withDrawReversal;
+                            transactionStatus.TransactionId = withDrawReversal.Id;
+                            transactionStatus.TransactionTime = DateTime.Now;
+                            transactionStatus = repository.AddTransactionStatus(transactionStatus);
+                            return transactionStatus;
+                           
+                        }
+                        else
+                        {
+                            transactionStatus.StatusMessage = $"Transaction of {transfer.Amount} from {transfer.FromCheckingAccount.AccountNumber} to {transfer.ToCheckingAccount.AccountNumber} on {date:HH:mm} by {transfer.FromCheckingAccount.Name} was { transactionStatus.processStatus }";
+                            transactionStatus.transaction = withDrawReversal;
+                            transactionStatus.TransactionId = withDrawReversal.Id;
+                            transactionStatus.TransactionTime = DateTime.Now;
+                            transactionStatus = repository.AddTransactionStatus(transactionStatus);
+                            return transactionStatus;
+                        }
+                    }
+                }
+                else
+                {
+                    transactionStatus.StatusMessage = $"Transaction of {transfer.Amount} from {transfer.FromCheckingAccount.AccountNumber} to {transfer.ToCheckingAccount.AccountNumber} on {date:HH:mm} by {transfer.FromCheckingAccount.Name} was { transactionStatus.processStatus }";
+                    transactionStatus.transaction = withDrawTransaction;
+                    transactionStatus.TransactionId = withDrawTransaction.Id;
+                    transactionStatus.TransactionTime = DateTime.Now;
+                    transactionStatus = repository.AddTransactionStatus(transactionStatus);
+                    return transactionStatus;
+                    
+                }
+                
+
+            }
+            catch(Exception ex)
+            {
+                transactionStatus.processStatus = TransactionProcessStatus.Error;
+                transactionStatus.StatusMessage = $"Transaction of {transfer.Amount} from {transfer.FromCheckingAccount.AccountNumber} to {transfer.ToCheckingAccount.AccountNumber} on {date:HH:mm} by {transfer.FromCheckingAccount.Name} was { transactionStatus.processStatus }";
+                transactionStatus.transaction = withDrawTransaction;
+                transactionStatus.TransactionId =withDrawTransaction.Id;
+                transactionStatus.TransactionTime = DateTime.Now;
+                transactionStatus = repository.AddTransactionStatus(transactionStatus);
+                return transactionStatus;
+            }
+        }
     }
 }
