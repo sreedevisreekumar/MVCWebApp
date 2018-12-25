@@ -27,5 +27,7 @@ namespace MVCATM.Models
         public virtual TransactionStatus TransactionStatus { get; set; }
 
         public int TransactionStatusId { get; set; }
+
+       
     }
 }

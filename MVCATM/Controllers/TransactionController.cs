@@ -82,6 +82,7 @@ namespace MVCATM.Controllers
             try
             {                
                 TransactionStatus transactionStatus=checkingAccountService.MakeTransaction(transaction);
+                transactionStatus.InitiatedBy = transaction.checkingAccount.Name;
 
                 return RedirectToAction("Details","TransactionStatus",routeValues:new { Id=transactionStatus.ID});
             }
@@ -124,6 +125,7 @@ namespace MVCATM.Controllers
                     {
 
                         TransactionStatus transactionStatus = this.checkingAccountService.MakeWithDrawal(transaction);
+                        transactionStatus.InitiatedBy = transaction.checkingAccount.Name;
                         return RedirectToAction("Details", "TransactionStatus", routeValues: new { Id = transactionStatus.ID });
                     }
                     else
@@ -169,6 +171,7 @@ namespace MVCATM.Controllers
                     {
 
                         TransactionStatus transactionStatus = this.checkingAccountService.MakeWithDrawal(transaction);
+                        transactionStatus.InitiatedBy = transaction.checkingAccount.Name;
                         return RedirectToAction("Details", "TransactionStatus", routeValues: new { Id = transactionStatus.ID });
                     }
                     else
@@ -227,6 +230,7 @@ namespace MVCATM.Controllers
 
                 CheckingAccount fromCheckingAccount = repository.GetCheckingAccountById(transfer.FromCheckingAccountId);
                 transfer.FromCheckingAccount = fromCheckingAccount;
+                String frmAccntName = fromCheckingAccount.Name;
                 Decimal balance = fromCheckingAccount.Balance;
                 if (balance <= amount)
                 {
@@ -239,6 +243,7 @@ namespace MVCATM.Controllers
                     transfer.ToCheckingAccountId = checkingAccount.Id;
                     TransactionStatus transactionStatus = this.checkingAccountService.MakeTransfer(transfer);
                     //  return RedirectToAction("Details", "TransactionStatus", routeValues: new { Id = transactionStatus.ID });
+                    transactionStatus.InitiatedBy = frmAccntName;
                     return PartialView("_TransactionStatus", transactionStatus);
 
                 }

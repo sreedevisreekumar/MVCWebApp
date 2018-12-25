@@ -23,6 +23,7 @@ namespace MVCATM.Models
         public virtual Transaction transaction { get; set; }
         [Required]
         public int TransactionId { get; set; }
-       
+        public string InitiatedBy { get; set; }
+
     }
 }
