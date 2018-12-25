@@ -347,6 +347,7 @@
     <Content Include="Views\CheckingAccount\Statement.cshtml" />
     <Content Include="Views\Transaction\Transfer.cshtml" />
     <Content Include="Views\Shared\_TransactionStatus.cshtml" />
+    <Content Include="Views\Shared\_TransactionPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

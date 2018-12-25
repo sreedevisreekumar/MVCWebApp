@@ -211,50 +211,49 @@ namespace MVCATM.Controllers
         [HttpPost]
         public ActionResult Transfer(TransferViewModel transfer)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(transfer);
-            }
             try
             {
-                CheckingAccount checkingAccount =this.repository.GetAccountByNumber(transfer.ToAccountNumber);
-                if (checkingAccount != null)
+                // TODO: Add insert logic here
+                Decimal amount = transfer.Amount;
+                if(amount < 1)
+                {
+                    ModelState.AddModelError("Amount", "Amount should not be less than 1 ");
+                }
+                CheckingAccount checkingAccount = this.repository.GetAccountByNumber(transfer.ToAccountNumber);
+                if (checkingAccount == null)
+                {
+                    ModelState.AddModelError("ToAccountNumber", "Account does not exist");
+                }
+
+                CheckingAccount fromCheckingAccount = repository.GetCheckingAccountById(transfer.FromCheckingAccountId);
+                transfer.FromCheckingAccount = fromCheckingAccount;
+                Decimal balance = fromCheckingAccount.Balance;
+                if (balance <= amount)
+                {
+                    ModelState.AddModelError("Amount", "Insufficient balance.Cannot proceed withdrawal");
+
+                }
+                if (ModelState.IsValid)
                 {
                     transfer.ToCheckingAccount = checkingAccount;
                     transfer.ToCheckingAccountId = checkingAccount.Id;
-                    // TODO: Add insert logic here
-                    Decimal amount = transfer.Amount;
-                    CheckingAccount fromCheckingAccount = repository.GetCheckingAccountById(transfer.FromCheckingAccountId);
-                    transfer.FromCheckingAccount = fromCheckingAccount;
-                    Decimal balance = fromCheckingAccount.Balance;
-                    if (balance >= amount)
-                    {
-                        TransactionStatus transactionStatus = this.checkingAccountService.MakeTransfer(transfer);
-                        //  return RedirectToAction("Details", "TransactionStatus", routeValues: new { Id = transactionStatus.ID });
-                        return PartialView("_TransactionStatus", transactionStatus);
-                        
-                    }
-                    else
-                    {
-
-                        ModelState.AddModelError("Amount", "Insufficient balance.Cannot proceed withdrawal");
-                        return View("Transfer", transfer);
-                    }
+                    TransactionStatus transactionStatus = this.checkingAccountService.MakeTransfer(transfer);
+                    //  return RedirectToAction("Details", "TransactionStatus", routeValues: new { Id = transactionStatus.ID });
+                    return PartialView("_TransactionStatus", transactionStatus);
 
                 }
-                else
-                {
-                    ModelState.AddModelError("ToAccountNumber", "Account does not exist");
-                    return View("Transfer", transfer);
-                }
-       
-                
+                return PartialView("_TransactionPartial", transfer);
             }
-            catch(Exception ex)
+            catch
             {
-                return View();
+                ModelState.AddModelError("", "Transfer failed due to exception");
+                return View("_TransactionPartial", transfer);
             }
+
+                    
+               
         }
+     
         // GET: Transaction/Edit/5
         public ActionResult Edit(int id)
         {

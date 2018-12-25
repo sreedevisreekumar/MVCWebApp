@@ -20,7 +20,7 @@ namespace MVCATM.Models
 
         public virtual CheckingAccount ToCheckingAccount { get; set; }
       
-        public int ToCheckingAccountId { get; set; }
+        public int? ToCheckingAccountId { get; set; }
         [Required]
         public string ToAccountNumber { get; set; }
 

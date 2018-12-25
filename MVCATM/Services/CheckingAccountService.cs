@@ -109,7 +109,7 @@ namespace MVCATM.Services
                     {
                         Amount = transfer.Amount,
                         checkingAccount = transfer.ToCheckingAccount,
-                        CheckingAccountId = transfer.ToCheckingAccountId
+                        CheckingAccountId = Convert.ToInt32(transfer.ToCheckingAccountId)
                     };
                     TransactionStatus depositTransStatus = MakeTransaction(depositTransaction);
                     if (depositTransStatus.processStatus == TransactionProcessStatus.Success)
