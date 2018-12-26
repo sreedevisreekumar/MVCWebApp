@@ -14,7 +14,8 @@ namespace MVCATM.Tests.Controllers
     [TestClass]
     public class TransactionControllerTest
     {
-        private  Mock<IRepository> mockRepository;
+
+        private Mock<IRepository> mockRepository;
         private CheckingAccount mockCheckingAccount;
         private List<CheckingAccount> checkingAccounts;
         private Transaction mockValidTransaction;
@@ -57,6 +58,7 @@ namespace MVCATM.Tests.Controllers
             };
 
 
+
             this.mockValidTransaction = new Transaction
             {
                 Amount = 10,
@@ -79,6 +81,7 @@ namespace MVCATM.Tests.Controllers
                 TransactionId = 1,
                 TransactionTime = Convert.ToDateTime("2018-11-12 18:50:22.550")
             };
+
             this.mockTransfer = new TransferViewModel
             {
                 Amount = 10,
@@ -122,9 +125,9 @@ namespace MVCATM.Tests.Controllers
           {
             new Transaction{Amount=100,checkingAccount=this.mockCheckingAccount,CheckingAccountId =100,Id=1,TransactionStatus=mockDepositTransactionStatus,TransactionStatusId=mockDepositTransactionStatus.ID}
 
-          };           
 
-           
+          };
+
             mockRepository.Setup(
                m => m.GetCheckingAccountById(It.IsAny<int>())
                                ).Returns(mockCheckingAccount);
@@ -190,9 +193,7 @@ namespace MVCATM.Tests.Controllers
 
             var controller = new TransactionController(mockRepository.Object);
 
-            
-
-            //Act
+           //Act
             var result = controller.Deposit(100) as ViewResult;
             var transaction = (Transaction)result.ViewData.Model;
 
@@ -205,7 +206,6 @@ namespace MVCATM.Tests.Controllers
         {
             //Arrange
             var controller = new TransactionController(mockRepository.Object);
-         
 
             RedirectToRouteResult result = (RedirectToRouteResult)controller.Deposit(mockValidTransaction);
             //Assert
@@ -219,7 +219,6 @@ namespace MVCATM.Tests.Controllers
             //Arrange
             var controller = new TransactionController(mockRepository.Object);
 
-            
             //verify pre insert
             int transactionCount = transactions.Count;
             Assert.AreEqual(1, transactionCount); // Verify the expected Number pre-insert
@@ -251,7 +250,7 @@ namespace MVCATM.Tests.Controllers
         {
             //Arrange
             var controller = new TransactionController(mockRepository.Object);
-            
+
             //verify pre insert
             int transactionCount = transactions.Count;
             Assert.AreEqual(1, transactionCount); // Verify the expected Number pre-insert
@@ -280,7 +279,6 @@ namespace MVCATM.Tests.Controllers
         {
             //Arrange
             var controller = new TransactionController(mockRepository.Object);
-           
 
             //Act
             var result = controller.Withdraw(mockInvalidTransaction) as ViewResult;
@@ -295,7 +293,7 @@ namespace MVCATM.Tests.Controllers
         {
             //Arrange
             var controller = new TransactionController(mockRepository.Object);
-         
+
             //verify pre insert
             int transactionCount = transactions.Count;
             Assert.AreEqual(1, transactionCount); // Verify the expected Number pre-insert
@@ -307,8 +305,6 @@ namespace MVCATM.Tests.Controllers
                 //Act
                 var result = controller.QuickCash(mockCheckingAccount.Id) as RedirectToRouteResult;
                 int resultStatusId = Convert.ToInt32(result.RouteValues["Id"]);
-
-
                 TransactionStatus latestStatus = transactionStatuses
                    .Where(t => t.TransactionId == resultStatusId).FirstOrDefault<TransactionStatus>();
                 Assert.IsNotNull(latestStatus);
@@ -401,6 +397,7 @@ namespace MVCATM.Tests.Controllers
             Assert.IsFalse(modelState);
             Assert.IsTrue(result.ViewData.ModelState["Amount"].Errors.Count > 0);
             Assert.IsTrue(result.ViewData.ModelState["Amount"].Errors[0].ErrorMessage == "Insufficient balance.Cannot proceed withdrawal");
+
 
         }
     }

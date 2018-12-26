@@ -12,7 +12,7 @@ using System.Web.Mvc;
 namespace MVCATM.Tests.Controllers
 {
     [TestClass]
-  public  class CheckingAccountControllerTest
+    public class CheckingAccountControllerTest
     {
         private Mock<IRepository> mockRepository;
         private CheckingAccount mockCheckingAccount;
@@ -37,7 +37,8 @@ namespace MVCATM.Tests.Controllers
                 Transactions = null,
                 User = new ApplicationUser { Pin = "9999" }
             };
-           this.checkingAccounts = new List<CheckingAccount>
+
+            this.checkingAccounts = new List<CheckingAccount>
             {
                 mockCheckingAccount
             };
@@ -56,7 +57,8 @@ namespace MVCATM.Tests.Controllers
                 TransactionId = 1,
                 TransactionTime = Convert.ToDateTime("2018-11-12 18:50:22.550")
             };
-           this.transactions = new List<Transaction>
+
+            this.transactions = new List<Transaction>
              {
                 new Transaction{Amount=100,checkingAccount=mockCheckingAccount,CheckingAccountId =100,Id=1,TransactionStatus =mockDepositTransactionStatus,TransactionStatusId =mockDepositTransactionStatus.ID }
 
@@ -69,15 +71,15 @@ namespace MVCATM.Tests.Controllers
                m => m.GetCheckingAccountById(It.IsAny<int>())
                                ).Returns(mockCheckingAccount);
 
-            
+
 
             mockRepository.Setup(
                 mr => mr.GetTransactionsByCheckingAccount(It.IsAny<int>())).Returns(
-                (int accountId)=>
-                transactions.FindAll(t=>t.CheckingAccountId ==accountId).ToList<Transaction>());
+                (int accountId) =>
+                transactions.FindAll(t => t.CheckingAccountId == accountId).ToList<Transaction>());
 
-            
-          
+
+
         }
 
         [TestMethod]
@@ -86,7 +88,7 @@ namespace MVCATM.Tests.Controllers
             //Arrage
             var controller = new CheckingAccountController(mockRepository.Object);
 
-     
+
             //Act
             var result = controller.Statement(mockCheckingAccount.Id) as ViewResult;
             List<Transaction> statements = ((ViewResult)result).Model as List<Transaction>;
@@ -95,9 +97,9 @@ namespace MVCATM.Tests.Controllers
             Assert.IsNotNull(statements);
 
             Assert.AreEqual(1, statements.Count);
-            foreach(Transaction trans in statements)
+            foreach (Transaction trans in statements)
             {
-                if(trans.CheckingAccountId !=mockCheckingAccount.Id)
+                if (trans.CheckingAccountId != mockCheckingAccount.Id)
                 {
                     validId = false;
                 }
