@@ -369,7 +369,7 @@ namespace MVCATM.Tests.Controllers
             Assert.AreEqual(toAccntBalance, 0);
 
             //Act
-            var result = controller.Transfer(invalidAccountTransfer) as ViewResult;
+            var result = controller.Transfer(invalidAccountTransfer) as PartialViewResult;
              bool modelState = result.ViewData.ModelState.IsValid;
              
               //Assert
@@ -393,7 +393,7 @@ namespace MVCATM.Tests.Controllers
             Assert.AreEqual(toAccntBalance, 0);
 
             //Act
-            var result = controller.Transfer(invalidAmountTransfer) as ViewResult;
+            var result = controller.Transfer(invalidAmountTransfer) as PartialViewResult;
             bool modelState = result.ViewData.ModelState.IsValid;
 
             //Assert
