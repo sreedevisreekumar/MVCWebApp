@@ -34,6 +34,11 @@ namespace MVCATM.Models
             CheckingAccount checkingAccount = this.applicationDbContext.CheckingAccounts.Where(c => c.Id == id).FirstOrDefault<CheckingAccount>();
             return checkingAccount;
         }
+        public CheckingAccount GetAccountByNumber(string accountNumber)
+        {
+            CheckingAccount checkingAccount = this.applicationDbContext.CheckingAccounts.Where(c => c.AccountNumber ==accountNumber).FirstOrDefault<CheckingAccount>();
+            return checkingAccount;
+        }
         public CheckingAccount GetAccountByUserId(string userId)
         {
             
@@ -115,5 +120,7 @@ namespace MVCATM.Models
                 .OrderByDescending(t=>t.TransactionStatus.TransactionTime)
                 .ToList<Transaction>();
         }
+
+       
     }
 }

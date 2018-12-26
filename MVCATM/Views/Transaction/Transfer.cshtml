@@ -1,0 +1,12 @@
+﻿@model MVCATM.Models.TransferViewModel
+
+@{
+    ViewBag.Title = "Transfer";
+}
+<h2>@ViewBag.Title</h2>
+
+@Html.Partial("_TransactionPartial",Model)
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+}

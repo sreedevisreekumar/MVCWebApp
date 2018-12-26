@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using MVCATM.Models;
 using MVCATM.Services;
 
+
 namespace MVCATM.Controllers
 {
     [Authorize]
@@ -81,6 +82,7 @@ namespace MVCATM.Controllers
             try
             {                
                 TransactionStatus transactionStatus=checkingAccountService.MakeTransaction(transaction);
+                transactionStatus.InitiatedBy = transaction.checkingAccount.Name;
 
                 return RedirectToAction("Details","TransactionStatus",routeValues:new { Id=transactionStatus.ID});
             }
@@ -123,6 +125,7 @@ namespace MVCATM.Controllers
                     {
 
                         TransactionStatus transactionStatus = this.checkingAccountService.MakeWithDrawal(transaction);
+                        transactionStatus.InitiatedBy = transaction.checkingAccount.Name;
                         return RedirectToAction("Details", "TransactionStatus", routeValues: new { Id = transactionStatus.ID });
                     }
                     else
@@ -168,6 +171,7 @@ namespace MVCATM.Controllers
                     {
 
                         TransactionStatus transactionStatus = this.checkingAccountService.MakeWithDrawal(transaction);
+                        transactionStatus.InitiatedBy = transaction.checkingAccount.Name;
                         return RedirectToAction("Details", "TransactionStatus", routeValues: new { Id = transactionStatus.ID });
                     }
                     else
@@ -179,16 +183,82 @@ namespace MVCATM.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("Withdraw", transaction);
+                    ModelState.AddModelError("Amount", "Exception");
+
+                    return View("Withdraw", transaction);
                 }
             }
             catch(Exception ex)
             {
-                return RedirectToAction("Withdraw", transaction);
+                ModelState.AddModelError("Amount", "Exception");
+
+                return View("Withdraw", transaction);
             }
            
         }
+        // GET: Transaction/Transfer
+        public ActionResult Transfer(int checkingAccountId)
+        {
+            CheckingAccount fromAccount = repository.GetCheckingAccountById(checkingAccountId);
 
+            TransferViewModel transferViewModel = new TransferViewModel
+            {
+                FromCheckingAccount=fromAccount,
+                FromCheckingAccountId =fromAccount.Id,
+                Amount=0,
+                ToAccountNumber=""
+
+            };
+            return View(transferViewModel);
+        }
+        [HttpPost]
+        public ActionResult Transfer(TransferViewModel transfer)
+        {
+            try
+            {
+                // TODO: Add insert logic here
+                Decimal amount = transfer.Amount;
+                if(amount < 1)
+                {
+                    ModelState.AddModelError("Amount", "Amount should not be less than 1 ");
+                }
+                CheckingAccount checkingAccount = this.repository.GetAccountByNumber(transfer.ToAccountNumber);
+                if (checkingAccount == null)
+                {
+                    ModelState.AddModelError("ToAccountNumber", "Account does not exist");
+                }
+
+                CheckingAccount fromCheckingAccount = repository.GetCheckingAccountById(transfer.FromCheckingAccountId);
+                transfer.FromCheckingAccount = fromCheckingAccount;
+                String frmAccntName = fromCheckingAccount.Name;
+                Decimal balance = fromCheckingAccount.Balance;
+                if (balance <= amount)
+                {
+                    ModelState.AddModelError("Amount", "Insufficient balance.Cannot proceed withdrawal");
+
+                }
+                if (ModelState.IsValid)
+                {
+                    transfer.ToCheckingAccount = checkingAccount;
+                    transfer.ToCheckingAccountId = checkingAccount.Id;
+                    TransactionStatus transactionStatus = this.checkingAccountService.MakeTransfer(transfer);
+                    //  return RedirectToAction("Details", "TransactionStatus", routeValues: new { Id = transactionStatus.ID });
+                    transactionStatus.InitiatedBy = frmAccntName;
+                    return PartialView("_TransactionStatus", transactionStatus);
+
+                }
+                return PartialView("_TransactionPartial", transfer);
+            }
+            catch
+            {
+                ModelState.AddModelError("", "Transfer failed due to exception");
+                return View("_TransactionPartial", transfer);
+            }
+
+                    
+               
+        }
+     
         // GET: Transaction/Edit/5
         public ActionResult Edit(int id)
         {

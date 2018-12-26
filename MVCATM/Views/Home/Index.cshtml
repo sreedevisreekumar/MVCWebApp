@@ -10,7 +10,7 @@
     </div>
     <div class="col-md-6 margin-top-20">
         <a href="@Url.Action("Statement","CheckingAccount",new {checkingAccountId= ViewBag.CheckingAccountId})" class="btn btn-primary btn-large btn-block"><i class="fas fa-print"></i> Print Statement</a>
-        <a href="#" class="btn btn-primary btn-large btn-block"><i class="fas fa-exchange-alt"></i> Transfer Funds</a>
+        <a href="@Url.Action("Transfer","Transaction",new {checkingAccountId= ViewBag.CheckingAccountId})" class="btn btn-primary btn-large btn-block"><i class="fas fa-exchange-alt"></i> Transfer Funds</a>
         <a href="@Url.Action("Deposit","Transaction",new {checkingAccountId= ViewBag.CheckingAccountId })" class="btn btn-primary btn-large btn-block"><i class="fas fa-arrow-circle-up"></i> Deposit</a>
     </div>
     

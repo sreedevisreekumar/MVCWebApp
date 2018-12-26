@@ -37,6 +37,7 @@ namespace MVCATM.Tests.Controllers
                 Transactions = null,
                 User = new ApplicationUser { Pin = "9999" }
             };
+
             this.checkingAccounts = new List<CheckingAccount>
             {
                 mockCheckingAccount
@@ -56,6 +57,7 @@ namespace MVCATM.Tests.Controllers
                 TransactionId = 1,
                 TransactionTime = Convert.ToDateTime("2018-11-12 18:50:22.550")
             };
+
             this.transactions = new List<Transaction>
              {
                 new Transaction{Amount=100,checkingAccount=mockCheckingAccount,CheckingAccountId =100,Id=1,TransactionStatus =mockDepositTransactionStatus,TransactionStatusId =mockDepositTransactionStatus.ID }
