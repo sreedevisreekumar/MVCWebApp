@@ -31,7 +31,7 @@ namespace MVCATM.Models
                 return string.Format("{0} {1}", FirstName, LastName);
             }
         }
-        [DataType(DataType.Currency)]
+      
         public decimal Balance { get; set; }
 
         public virtual ApplicationUser User { get; set; }
